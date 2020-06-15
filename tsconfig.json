@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "./PrepareKeptnEnvTask/**/*",
+    "./SendKeptnEventTask/**/*",
+    "./WaitForKeptnEventTask/**/*"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "keptn-integration",
+  "version": "1.0.0",
+  "description": "Integration of Keptn within your build.",
+  "scripts": {
+    "clean": "rimraf ./*.vsix",
+    "build": "tsc -p .",
+    "test-prep": "mocha PrepareKeptnEnvTask/tests/_suite.js",
+    "test-send": "mocha SendKeptnEventTask/tests/_suite.js",
+    "test-wait": "mocha WaitForKeptnEventTask/tests/_suite.js",
+    "cbt": "npm run clean && npm run build && npm run test-prep && npm run test-send && npm run test-wait",
+    "package": "tfx extension create --manifest-globs vss-extension.json",
+    "publish": "tfx extension publish --manifest-globs vss-extension.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/keptn-contrib/azureveops-keptn-plugin"
+  },
+  "author": "Bert Van der Heyden (realdolmen.com)",
+  "devDependencies": {
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^13.13.4",
+    "@types/q": "^1.5.2",
+    "install": "^0.13.0",
+    "mocha": "^7.1.2",
+    "rimraf": "^2.6.3",
+    "sync-request": "^6.1.0",
+    "tfx-cli": "^0.7.11"
+  },
+  "dependencies": {
+    "azure-pipelines-task-lib": "^2.9.3",
+    "moment-timezone": "^0.5.28",
+    "axios": "^0.19.2"
+  }
+}

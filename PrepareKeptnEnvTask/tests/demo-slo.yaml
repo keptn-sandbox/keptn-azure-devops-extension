@@ -1,0 +1,35 @@
+---
+spec_version: "0.1.1"
+comparison:
+  compare_with: "single_result"
+  include_result_with_score: "pass"
+  aggregate_function: "avg"
+objectives:
+  - sli: "throughput" #no check on throughput here
+  - sli: "error_rate"
+    pass:             # pass if no errors
+      - criteria:
+          - "<1"
+    warning:          # warn when less than 10 errors
+      - criteria:
+          - "<=10"
+  - sli: "response_time_p50"
+    pass:             # pass if (relative change <= 10% AND absolute value is < 800ms)
+      - criteria:
+          - "<=+10%"
+          - "<800"
+    warning:          # if the response time is below 1000ms, the result should be a warning
+      - criteria:
+          - "<=1000"
+  - sli: "response_time_p90"
+  - sli: "response_time_p95"
+    pass:             # pass if (relative change <= 15% AND absolute value is < 2000ms)
+      - criteria:
+          - "<=+15%"
+          - "<2000"
+    warning:          # if the response time is below 2500ms, the result should be a warning
+      - criteria:
+          - "<=2500"
+total_score:
+  pass: "90%"
+  warning: "75%"

@@ -1,0 +1,8 @@
+node_modules
+*.js
+.project
+.taskkey
+.vscode
+package-lock.json
+.publish.sh
+*.vsix
