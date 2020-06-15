@@ -38,7 +38,7 @@ function prepare():Params | undefined {
 		const service: string | undefined = tl.getInput('service');
 		if (service !== undefined) {
 			p.service = service;
-			tl.setVariable('PrepareKeptnEnv_stage', p.stage);
+			tl.setVariable('PrepareKeptnEnv_service', p.service);
 		}
 		else{
             badInput.push('service');
