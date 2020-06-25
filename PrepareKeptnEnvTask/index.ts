@@ -143,7 +143,7 @@ async function run(input:Params){
 		{ //scope verify and create service if needed
 			let options = {
 				method: <Method>"GET",
-				url: input.keptnApiEndpoint + '/configuration-service/v1//project/' + input.project + '/stage/'+ input.stage + '/service/' + input.service,
+				url: input.keptnApiEndpoint + '/configuration-service/v1/project/' + input.project + '/stage/'+ input.stage + '/service/' + input.service,
 				headers: {'x-token': input.keptnApiToken},
 				validateStatus: (status:any) => status === 200 || status === 404
 			};

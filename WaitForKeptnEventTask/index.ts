@@ -88,7 +88,6 @@ async function run(input:Params){
 	}
 }
 
-
 /**
  * Request the evaluation-done event based on the startEvaluationKeptnContext task variable.
  * Try a couple of times since it can take a few seconds for keptn to evaluate.
@@ -101,6 +100,8 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 	console.log('keptnContext = ' + keptnContext);
 	let evaluationScore = -1;
 	let evaluationResult = "empty";
+	let evaluationDetails:any;
+
 	let options = {
 		method: <Method>"GET",
 		url: input.keptnApiEndpoint + '/v1/event?type=sh.keptn.events.evaluation-done&keptnContext=' + keptnContext,
@@ -110,10 +111,11 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 	let c=0;
 	do{
 		try{
-			await delay(1000);
+			await delay(10000); //wait 10 seconds
 			var response = await httpClient(options);
 			evaluationScore = response.data.data.evaluationdetails.score;
-    		evaluationResult = response.data.data.evaluationdetails.result;
+			evaluationResult = response.data.data.evaluationdetails.result;
+			evaluationDetails = response.data.data.evaluationdetails;
 		}catch(err){
 			if (err != undefined 
 				&& err.response != undefined 
@@ -122,7 +124,8 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 				&& err.response.data.message != undefined
 				&& err.response.data.code == '500'
 				&& err.response.data.message.startsWith('No Keptn sh.keptn.events.evaluation-done event found for context')){
-				if (++c > 5){
+				if (++c > 10){ //2 minutes max
+					console.log(c);
 					evaluationResult = "not-found"
 				}
 			}

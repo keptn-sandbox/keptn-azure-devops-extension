@@ -17,7 +17,7 @@ tmr.registerMockExport("getEndpointUrl", function(){return keptnFile.split('\n')
 tmr.registerMockExport("getEndpointAuthorizationParameter", function(){return keptnFile.split('\n')[1]});
 tmr.setInput('start', moment().subtract(1, 'days').format('YYYY-MM-DDTHH:MM:ssZ'));
 tmr.setInput('teststrategy', 'performance');
-tmr.setInput('waitForEvaluationDone', 'true');
+tmr.setVariableName("Build.DefinitionName", "TestDefinition");
 
 tmr.run();
 

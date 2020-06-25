@@ -13,7 +13,7 @@
   "demands": [],
   "version": {
     "Major": 1,
-    "Minor": 2,
+    "Minor": 3,
     "Patch": 0
   },
   "groups": [
@@ -72,8 +72,7 @@
       "options": {
         "configurationChange": "configuration-change",
         "deploymentFinished": "deployment-finished",
-        "startEvaluation": "start-evaluation",
-        "waitForEvaluationDone": "wait for evaluation-done"
+        "startEvaluation": "start-evaluation"
       },
       "required": true,
       "helpMarkDown": "The type of event send to Keptn",
@@ -106,16 +105,6 @@
       "defaultValue": "performance",
       "required": true,
       "helpMarkDown": "Teststrategy which is used for the evaluation",
-      "groupName": "keptn-event",
-      "visibleRule": "eventType = startEvaluation"
-    },
-    {
-      "name": "waitForEvaluationDone",
-      "type": "boolean",
-      "label": "Wait for evaluation-done event",
-      "defaultValue": true,
-      "required": true,
-      "helpMarkDown": "Wait for the evaluation-done event and report result and score",
       "groupName": "keptn-event",
       "visibleRule": "eventType = startEvaluation"
     }

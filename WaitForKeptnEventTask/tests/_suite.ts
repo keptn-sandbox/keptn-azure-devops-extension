@@ -13,7 +13,7 @@ describe('Wait for Keptn Event task tests', function () {
     });
 
 	it('must wait for evaluationDone', function(done: MochaDone) {
-		this.timeout(20000);
+		this.timeout(125000);
 
 		let tp = path.join(__dirname, 'waitfor.js');
 	    let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);

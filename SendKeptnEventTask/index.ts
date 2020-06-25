@@ -7,7 +7,6 @@ class EvalParams {
 	start: string = '';
 	end: string | undefined;
 	testStrategy: string = '';
-	waitForEvaluationDone: boolean | undefined;
 }
 
 class Params {
@@ -97,7 +96,6 @@ function prepare():Params | undefined {
 			else{
 				badInput.push('teststrategy');
 			}
-			pe.waitForEvaluationDone = tl.getBoolInput('waitForEvaluationDone');
 			if (badInput.length > 0) {
 				tl.setResult(tl.TaskResult.Failed, 'missing required input (' + badInput.join(',') + ')');
 				return;
@@ -147,21 +145,13 @@ async function run(input:Params){
 		});
 		if (input.eventType == 'startEvaluation' && input.evalParams != undefined){
 			let keptnContext = await startEvaluation(input, axiosInstance);
-			if (input.evalParams.waitForEvaluationDone){
-				return waitForEvaluationDone(input, axiosInstance);
-			}
-			else{
-				return keptnContext;
-			}
+			return keptnContext;
 		}
 		else if (input.eventType == 'configurationChange'){
 			return 'not yet implemented!';
 		}
 		else if (input.eventType == 'deploymentFinished'){
 			return 'not yet implemented!';
-		}
-		else if (input.eventType == 'waitForEvaluationDone'){
-			return waitForEvaluationDone(input, axiosInstance);
 		}
 		else{
 			throw new Error('Unsupported eventType');
@@ -191,7 +181,14 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 				stage: input.stage,
 				teststrategy: input.evalParams!=undefined?input.evalParams.testStrategy:'null',
 				start: input.evalParams!=undefined?input.evalParams.start:'null',
-				end: input.evalParams!=undefined?input.evalParams.end:'null'
+				end: input.evalParams!=undefined?input.evalParams.end:'null',
+				labels: {
+					definition: tl.getVariable("Release.DefinitionName"),
+					buildnr: tl.getVariable("Build.BuildNumber"),
+					runby: tl.getVariable("Build.QueuedBy"),
+					environment : tl.getVariable("Environment.Name"),
+					ciBackLink : tl.getVariable("Release.ReleaseWebURL")
+				}
 			}
 		}
 	};
@@ -200,67 +197,6 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 	let response = await httpClient(options);
 	tl.setVariable('startEvaluationKeptnContext', response.data.keptnContext);
 	return response.data.keptnContext;
-}
-
-/**
- * Request the evaluation-done event based on the startEvaluationKeptnContext task variable.
- * Try a couple of times since it can take a few seconds for keptn to evaluate.
- * 
- * @param input Parameters
- * @param httpClient an instance of axios
- */
-async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
-	let keptnContext = tl.getVariable('startEvaluationKeptnContext');
-	console.log('keptnContext = ' + keptnContext);
-	let evaluationScore = -1;
-	let evaluationResult = "empty";
-	let options = {
-		method: <Method>"GET",
-		url: input.keptnApiEndpoint + '/v1/event?type=sh.keptn.events.evaluation-done&keptnContext=' + keptnContext,
-		headers: {'x-token': input.keptnApiToken}
-	};
-
-	let c=0;
-	do{
-		try{
-			await delay(1000);
-			var response = await httpClient(options);
-			evaluationScore = response.data.data.evaluationdetails.score;
-    		evaluationResult = response.data.data.evaluationdetails.result;
-		}catch(err){
-			if (err != undefined 
-				&& err.response != undefined 
-				&& err.response.data != undefined
-				&& err.response.data.code != undefined
-				&& err.response.data.message != undefined
-				&& err.response.data.code == '500'
-				&& err.response.data.message.startsWith('No Keptn sh.keptn.events.evaluation-done event found for context')){
-				if (++c > 5){
-					evaluationResult = "not-found"
-				}
-			}
-			else{
-				throw err;
-			}
-		}
-	}while (evaluationResult == "empty");
-
-	if (evaluationResult == "pass"){
-		tl.setResult(tl.TaskResult.Succeeded, "Keptn evaluation went well. Score = " + evaluationScore);
-	}
-	else{
-		tl.setResult(tl.TaskResult.SucceededWithIssues, "Keptn evaluation " +  evaluationResult + ". Score = " + evaluationScore);
-	}
-
-	return evaluationResult;
-}
-
-/**
- * Helper function to wait an amount of millis.
- * @param ms 
- */
-function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**

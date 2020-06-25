@@ -49,23 +49,6 @@ describe('Send Keptn Event task tests', function () {
 		
 	    done();
 	});
-
-	it('must wait for evaluationDone', function(done: MochaDone) {
-		this.timeout(20000);
-
-		let tp = path.join(__dirname, 'waitfor.js');
-	    let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
-	
-		tr.run();
-		
-		console.log(tr.succeeded);
-		console.log(tr.stdout);
-		console.log(tr.stderr);
-	    assert.equal(tr.succeeded, true, 'should have succeeded');
-	    assert.equal(tr.errorIssues.length, 0, "should have no errors");
-		
-	    done();
-	});
 	
 	it('should fail on bad input', function(done: MochaDone) {
 		let tp = path.join(__dirname, 'badinput.js');
