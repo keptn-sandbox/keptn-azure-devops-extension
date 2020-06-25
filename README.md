@@ -1,4 +1,4 @@
-# AzureDevOps Keptn Integration
+# Azure DevOps Keptn Integration
 
 Integration of Keptn within your TFS/VSTS/AZDO build. 
 
@@ -6,6 +6,9 @@ This extension includes 3 tasks which can be used to integrate your pipeline wit
 - Prepare Keptn environment
 - Send Keptn event
 - Wait for Keptn event
+
+Watch the following Keptn Community Webinar to see the extension in action:
+[![Automating Quality Gates in Azure DevOps with Keptn](https://img.youtube.com/vi/vgCizWLVsPc/0.jpg)](https://www.youtube.com/watch?v=vgCizWLVsPc "Automating Quality Gates in Azure DevOps with Keptn")
 
 ## The service endpoint
 First of all you need to configure the Keptn endpoint as a `service connection`.
