@@ -12,6 +12,7 @@ tmr.setInput('project', 'kbi');
 tmr.setInput('service', 'inburgering');
 tmr.setInput('stage', 'ac2');
 tmr.setInput('keptnApiEndpoint', '1234567');
+tmr.setInput('keptnContextVar', 'keptnContext');
 let keptnFile = fs.readFileSync(require('os').homedir() + '/.keptn/.keptn','utf8');
 tmr.registerMockExport("getEndpointUrl", function(){return keptnFile.split('\n')[0]});
 tmr.registerMockExport("getEndpointAuthorizationParameter", function(){return keptnFile.split('\n')[1]});

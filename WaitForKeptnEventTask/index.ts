@@ -4,9 +4,11 @@ import https = require('https');
 
 class Params {
 	waitForEventType: string = '';
+	timeout: number = 3;
 	keptnContextVar: string = '';
 	keptnApiEndpoint: string = '';
 	keptnApiToken: string = '';
+	keptnBridgeEndpoint: string | undefined;
 }
 
 /**
@@ -32,6 +34,14 @@ function prepare():Params | undefined {
             badInput.push('waitForEventType');
 		}
 		
+		let timeoutStr: string | undefined = tl.getInput('timeout');
+		if (timeoutStr != undefined){
+			p.timeout = +timeoutStr;
+		}
+		else{
+			badInput.push('timeout');
+		}
+
 		let keptnContextVar: string | undefined = tl.getInput('keptnContextVar');
 		if (keptnContextVar != undefined){
 			p.keptnContextVar = keptnContextVar;
@@ -43,6 +53,7 @@ function prepare():Params | undefined {
 		if (keptnApiEndpointConn !== undefined) {
 			const keptnApiEndpoint: string | undefined = tl.getEndpointUrl(keptnApiEndpointConn, false);
 			const keptnApiToken: string | undefined = tl.getEndpointAuthorizationParameter(keptnApiEndpointConn, 'apitoken', false);
+			const keptnBridgeEndpoint: string | undefined = tl.getEndpointDataParameter(keptnApiEndpointConn, 'bridge', false);
 			
 			if (keptnApiEndpoint != undefined){
 				p.keptnApiEndpoint = keptnApiEndpoint;
@@ -55,6 +66,9 @@ function prepare():Params | undefined {
 			}
 			else{
 				badInput.push('keptnApiToken');
+			}
+			if (keptnBridgeEndpoint !== undefined) {
+				p.keptnBridgeEndpoint = keptnBridgeEndpoint;
 			}
 		}
 		else{
@@ -119,6 +133,9 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 	};
 
 	let c=0;
+	let max = (input.timeout * 60) / 10
+	let out;
+	console.log("waiting in steps of 10 seconds, max " + max + " loops.");
 	do{
 		try{
 			await delay(10000); //wait 10 seconds
@@ -126,6 +143,7 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 			evaluationScore = response.data.data.evaluationdetails.score;
 			evaluationResult = response.data.data.evaluationdetails.result;
 			evaluationDetails = response.data.data.evaluationdetails;
+			out = response.data.data;
 		}catch(err){
 			if (err != undefined 
 				&& err.response != undefined 
@@ -134,8 +152,7 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 				&& err.response.data.message != undefined
 				&& err.response.data.code == '500'
 				&& err.response.data.message.startsWith('No Keptn sh.keptn.events.evaluation-done event found for context')){
-				if (++c > 20){ //4 minutes max
-					console.log(c);
+				if (++c > max){
 					evaluationResult = "not-found"
 				}
 				else {
@@ -148,12 +165,21 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 		}
 	}while (evaluationResult == "empty");
 
-	if (evaluationResult == "pass"){
+	if (evaluationResult == "not-found"){
+		tl.setResult(tl.TaskResult.Failed, "No Keptn sh.keptn.events.evaluation-done event found for context");
+		return "No Keptn sh.keptn.events.evaluation-done event found for context";
+	}
+	else if (evaluationResult == "pass"){
 		tl.setResult(tl.TaskResult.Succeeded, "Keptn evaluation went well. Score = " + evaluationScore);
 	}
 	else{
 		tl.setResult(tl.TaskResult.SucceededWithIssues, "Keptn evaluation " +  evaluationResult + ". Score = " + evaluationScore);
 	}
+	if (input.keptnBridgeEndpoint != undefined){
+		console.log("Link to Bridge: " + input.keptnBridgeEndpoint + "/trace/" + keptnContext);
+	}
+	console.log("************* Result from Keptn ****************");
+	console.log(JSON.stringify(out, null, 2));
 
 	return evaluationResult;
 }

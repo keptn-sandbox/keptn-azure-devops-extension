@@ -1,5 +1,5 @@
 {
-  "id": "2f7a32d0-699f-4693-8955-e5ff64e3f4a1",
+  "id": "f423c2b8-bd6d-11ea-b3de-0242ac130004",
   "name": "WaitForKeptnEventTask",
   "friendlyName": "Wait for Keptn Event",
   "description": "Wait for an answer of a Keptn event",
@@ -45,14 +45,22 @@
       "groupName": "keptn-event"
     },
     {
+      "name": "timeout",
+      "type": "string",
+      "label": "Wait until timeout minutes",
+      "defaultValue": "3",
+      "required": true,
+      "helpMarkDown": "Maximum amount of minutes to wait before timeout",
+      "groupName": "keptn-event"
+    },
+    {
       "name": "keptnContextVar",
       "type": "string",
       "label": "KeptnContext variable",
       "defaultValue": "keptnContext",
       "required": true,
       "helpMarkDown": "The name of the pipeline variable containing the keptnContext",
-      "groupName": "keptn-event",
-      "visibleRule": "waitForEventType = evaluationDone"
+      "groupName": "keptn-event"
     }
   ],
   "minimumAgentVersion": "1.83.0",
