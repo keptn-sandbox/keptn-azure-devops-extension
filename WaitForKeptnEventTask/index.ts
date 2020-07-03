@@ -4,6 +4,7 @@ import https = require('https');
 
 class Params {
 	waitForEventType: string = '';
+	keptnContextVar: string = '';
 	keptnApiEndpoint: string = '';
 	keptnApiToken: string = '';
 }
@@ -31,6 +32,14 @@ function prepare():Params | undefined {
             badInput.push('waitForEventType');
 		}
 		
+		let keptnContextVar: string | undefined = tl.getInput('keptnContextVar');
+		if (keptnContextVar != undefined){
+			p.keptnContextVar = keptnContextVar;
+		}
+		else{
+			badInput.push('keptnContextVar');
+		}
+
 		if (keptnApiEndpointConn !== undefined) {
 			const keptnApiEndpoint: string | undefined = tl.getEndpointUrl(keptnApiEndpointConn, false);
 			const keptnApiToken: string | undefined = tl.getEndpointAuthorizationParameter(keptnApiEndpointConn, 'apitoken', false);
@@ -86,6 +95,7 @@ async function run(input:Params){
 	}catch(err){
 		throw err;
 	}
+	return "task finished";
 }
 
 /**
@@ -96,8 +106,8 @@ async function run(input:Params){
  * @param httpClient an instance of axios
  */
 async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
-	let keptnContext = tl.getVariable('startEvaluationKeptnContext');
-	console.log('keptnContext = ' + keptnContext);
+	let keptnContext = tl.getVariable(input.keptnContextVar);
+	console.log('using keptnContext = ' + keptnContext);
 	let evaluationScore = -1;
 	let evaluationResult = "empty";
 	let evaluationDetails:any;
@@ -124,9 +134,12 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 				&& err.response.data.message != undefined
 				&& err.response.data.code == '500'
 				&& err.response.data.message.startsWith('No Keptn sh.keptn.events.evaluation-done event found for context')){
-				if (++c > 10){ //2 minutes max
+				if (++c > 20){ //4 minutes max
 					console.log(c);
 					evaluationResult = "not-found"
+				}
+				else {
+					console.log("wait another 10 seconds");
 				}
 			}
 			else{

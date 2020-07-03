@@ -13,7 +13,7 @@
   "demands": [],
   "version": {
     "Major": 1,
-    "Minor": 3,
+    "Minor": 4,
     "Patch": 0
   },
   "groups": [
@@ -43,6 +43,16 @@
       "required": true,
       "helpMarkDown": "The type of event to wait for",
       "groupName": "keptn-event"
+    },
+    {
+      "name": "keptnContextVar",
+      "type": "string",
+      "label": "KeptnContext variable",
+      "defaultValue": "keptnContext",
+      "required": true,
+      "helpMarkDown": "The name of the pipeline variable containing the keptnContext",
+      "groupName": "keptn-event",
+      "visibleRule": "waitForEventType = evaluationDone"
     }
   ],
   "minimumAgentVersion": "1.83.0",

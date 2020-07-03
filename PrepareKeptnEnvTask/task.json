@@ -13,7 +13,7 @@
   "demands": [],
   "version": {
     "Major": 1,
-    "Minor": 3,
+    "Minor": 4,
     "Patch": 0
   },
   "groups": [
@@ -41,7 +41,7 @@
       "name": "project",
       "type": "string",
       "label": "Keptn Project",
-      "defaultValue": "",
+      "defaultValue": "$(KeptnProject)",
       "required": true,
       "helpMarkDown": "The Keptn project",
       "groupName": "keptn"
@@ -50,7 +50,7 @@
       "name": "service",
       "type": "string",
       "label": "Keptn Service",
-      "defaultValue": "",
+      "defaultValue": "$(KeptnService)",
       "required": true,
       "helpMarkDown": "The Keptn service",
       "groupName": "keptn"
@@ -59,7 +59,7 @@
       "name": "stage",
       "type": "string",
       "label": "Keptn Stage",
-      "defaultValue": "",
+      "defaultValue": "$(KeptnStage)",
       "required": true,
       "helpMarkDown": "The Keptn stage",
       "groupName": "keptn"

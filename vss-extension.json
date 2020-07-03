@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "keptn-integration",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "name": "Keptn Integration",
   "description": "Integration of Keptn within your build or release pipeline.",
   "publisher": "RealdolmenDevOps",
@@ -38,7 +38,18 @@
         },
         "authenticationSchemes": [
           {
-            "type": "ms.vss-endpoint.endpoint-auth-scheme-token"
+            "type": "ms.vss-endpoint.endpoint-auth-scheme-token",
+            "inputDescriptors": [
+              {
+                "id": "bridge",
+                "name": "Bridge URL",
+                "description": "URL of the bridge including https://bridge.keptn.domain",
+                "validation": {
+                  "isRequired": true,
+                  "dataType": "string"
+                }
+              }
+            ]
           }
         ],
         "helpMarkDown": "<a href=\"https://github.com/keptn-sandbox/keptn-azure-devops-extension\" target=\"_blank\"><b>Learn More</b></a>"

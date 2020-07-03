@@ -4,7 +4,7 @@
   "friendlyName": "Send cloud-event to Keptn",
   "description": "Send cloud-event to Keptn",
   "author": "Realdolmen (Bert Van der Heyden)",
-  "helpMarkDown": "TODO",
+  "helpMarkDown": "Send cloud-event to Keptn. Use startEvaluation to trigger Keptn to perform the SLI/SLO based validation.",
   "category": "Test",
   "visibility": [
     "Build",
@@ -13,7 +13,7 @@
   "demands": [],
   "version": {
     "Major": 1,
-    "Minor": 3,
+    "Minor": 4,
     "Patch": 0
   },
   "groups": [
@@ -41,7 +41,7 @@
       "name": "project",
       "type": "string",
       "label": "Keptn Project",
-      "defaultValue": "",
+      "defaultValue": "$(KeptnProject)",
       "required": false,
       "helpMarkDown": "The Keptn project. When not provided it takes the settings from the Prepare Keptn environment task.",
       "groupName": "keptn-settings"
@@ -50,7 +50,7 @@
       "name": "service",
       "type": "string",
       "label": "Keptn Service",
-      "defaultValue": "",
+      "defaultValue": "$(KeptnService)",
       "required": false,
       "helpMarkDown": "The Keptn service. When not provided it takes the settings from the Prepare Keptn environment task.",
       "groupName": "keptn-settings"
@@ -59,7 +59,7 @@
       "name": "stage",
       "type": "string",
       "label": "Keptn Stage",
-      "defaultValue": "",
+      "defaultValue": "$(KeptnStage)",
       "required": false,
       "helpMarkDown": "The Keptn stage. When not provided it takes the settings from the Prepare Keptn environment task.",
       "groupName": "keptn-settings"
@@ -70,8 +70,6 @@
       "label": "Type of event",
       "defaultValue": "startEvaluation",
       "options": {
-        "configurationChange": "configuration-change",
-        "deploymentFinished": "deployment-finished",
         "startEvaluation": "start-evaluation"
       },
       "required": true,
@@ -99,12 +97,12 @@
       "visibleRule": "eventType = startEvaluation"
     },
     {
-      "name": "teststrategy",
+      "name": "keptnContextVar",
       "type": "string",
-      "label": "Teststrategy for the evaluation",
-      "defaultValue": "performance",
+      "label": "KeptnContext output variable",
+      "defaultValue": "keptnContext",
       "required": true,
-      "helpMarkDown": "Teststrategy which is used for the evaluation",
+      "helpMarkDown": "The name of the pipeline variable to store the keptnContext in",
       "groupName": "keptn-event",
       "visibleRule": "eventType = startEvaluation"
     }
