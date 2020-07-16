@@ -13,10 +13,10 @@ tmr.setInput('stage', 'hardening');
 tmr.setInput('keptnApiEndpoint', '1234567');
 tmr.setInput('keptnContextVar', 'keptnContext');
 tmr.setInput('timeout', '1');
+tmr.setInput("bridgeURL", "https://TheBridgeURL");
 let keptnFile = fs.readFileSync(require('os').homedir() + '/.keptn/.keptn','utf8');
 tmr.registerMockExport("getEndpointUrl", function(){return keptnFile.split('\n')[0]});
 tmr.registerMockExport("getEndpointAuthorizationParameter", function(){return keptnFile.split('\n')[1]});
-tmr.registerMockExport("getEndpointDataParameter", function(){return "https://TheBridgeURL"});
 tmr.registerMockExport("getTaskVariable", function(){return "TestKeptnContext"});
 
 tmr.run();

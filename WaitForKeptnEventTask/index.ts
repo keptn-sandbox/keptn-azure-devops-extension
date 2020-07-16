@@ -53,7 +53,7 @@ function prepare():Params | undefined {
 		if (keptnApiEndpointConn !== undefined) {
 			const keptnApiEndpoint: string | undefined = tl.getEndpointUrl(keptnApiEndpointConn, false);
 			const keptnApiToken: string | undefined = tl.getEndpointAuthorizationParameter(keptnApiEndpointConn, 'apitoken', false);
-			const keptnBridgeEndpoint: string | undefined = tl.getEndpointDataParameter(keptnApiEndpointConn, 'bridge', false);
+			const keptnBridgeEndpoint: string | undefined = tl.getInput('bridgeURL');
 			
 			if (keptnApiEndpoint != undefined){
 				p.keptnApiEndpoint = keptnApiEndpoint;

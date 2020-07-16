@@ -13,7 +13,7 @@
   "demands": [],
   "version": {
     "Major": 1,
-    "Minor": 4,
+    "Minor": 6,
     "Patch": 0
   },
   "groups": [
@@ -31,6 +31,14 @@
       "defaultValue": "",
       "required": true,
       "helpMarkDown": "Connection to the Keptn API which is managed as a connectedService in AzureDevOps."
+    },
+    {
+      "name": "bridgeURL",
+      "type": "string",
+      "label": "URL of the Keptn Bridge",
+      "defaultValue": "$(KeptnBridge)",
+      "required": false,
+      "helpMarkDown": "URL of the bridge including https://bridge.keptn.domain"
     },
     {
       "name": "waitForEventType",
