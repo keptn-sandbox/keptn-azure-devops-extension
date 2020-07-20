@@ -180,7 +180,7 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 				project: input.project,
 				service: input.service,
 				stage: input.stage,
-				//teststrategy: input.evalParams!=undefined?input.evalParams.testStrategy:'null',
+				teststrategy: 'performance',
 				start: input.evalParams!=undefined?input.evalParams.start:'null',
 				end: input.evalParams!=undefined?input.evalParams.end:'null',
 				labels: {
