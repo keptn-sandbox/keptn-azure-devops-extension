@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "keptn-integration-dev",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "name": "DEV Keptn Integration 0.1.11",
   "description": "Integration of Keptn within your build or release pipeline.",
   "publisher": "bertvanderheyden",
