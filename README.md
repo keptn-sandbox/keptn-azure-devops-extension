@@ -66,5 +66,8 @@ In case of evaluation-done, it will give a warning whenever the lighthouse servi
 > **0.1.5**
 > - Added SLI and SLO upload
 
+> **0.1.13**
+> - Github tickets 16, 14, 2, 7, 17, 18, 8, 19
+
 Created by `Bert Van der Heyden, RealDolmen - a GFI group company`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration

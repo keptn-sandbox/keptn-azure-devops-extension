@@ -1,5 +1,5 @@
 {
-  "id": "2f7a32d0-699f-4693-8955-e5ff64e3f4a1",
+  "id": "f423c2b8-bd6d-11ea-b3de-0242ac130004",
   "name": "WaitForKeptnEventTask",
   "friendlyName": "Wait for Keptn Event",
   "description": "Wait for an answer of a Keptn event",
@@ -13,7 +13,7 @@
   "demands": [],
   "version": {
     "Major": 1,
-    "Minor": 6,
+    "Minor": 7,
     "Patch": 0
   },
   "groups": [
@@ -68,6 +68,34 @@
       "defaultValue": "keptnContext",
       "required": true,
       "helpMarkDown": "The name of the pipeline variable containing the keptnContext",
+      "groupName": "keptn-event"
+    },
+    {
+      "name": "markBuildOnError",
+      "type": "pickList",
+      "label": "Mark build as ... on result error from Keptn",
+      "defaultValue": "WARNING",
+      "options": {
+        "NOTHING": "as passed - do nothing",
+        "WARNING": "as passed with warnings",
+        "FAILED": "as failed"
+      },
+      "required": false,
+      "helpMarkDown": "What should happen when error state is returned by Keptn?",
+      "groupName": "keptn-event"
+    },
+    {
+      "name": "markBuildOnWarning",
+      "type": "pickList",
+      "label": "Mark build as ... on result warning from Keptn",
+      "defaultValue": "WARNING",
+      "options": {
+        "NOTHING": "as passed - do nothing",
+        "WARNING": "as passed with warnings",
+        "FAILED": "as failed"
+      },
+      "required": false,
+      "helpMarkDown": "What should happen when warning state is returned by Keptn?",
       "groupName": "keptn-event"
     }
   ],
