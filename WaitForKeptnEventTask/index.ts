@@ -9,6 +9,20 @@ class Params {
 	keptnApiEndpoint: string = '';
 	keptnApiToken: string = '';
 	keptnBridgeEndpoint: string | undefined;
+	markBuildOn: {[index:string]:string} = {
+		"error": 'WARNING',
+		"warning": 'WARNING'
+	}
+}
+
+const logIssueMap:{[index:string]:tl.IssueType} = {
+	"WARNING":tl.IssueType.Warning,
+	"FAILED":tl.IssueType.Error
+}
+
+const completeTaskMap:{[index:string]:tl.TaskResult} = {
+	"WARNING":tl.TaskResult.SucceededWithIssues,
+	"FAILED":tl.TaskResult.Failed
 }
 
 /**
@@ -49,6 +63,16 @@ function prepare():Params | undefined {
 		else{
 			badInput.push('keptnContextVar');
 		}
+
+		let markBuildOnError: string | undefined = tl.getInput('markBuildOnError');
+		if (markBuildOnError != undefined){
+			p.markBuildOn.error = markBuildOnError;
+		}
+		let markBuildOnWarning: string | undefined = tl.getInput('markBuildOnWarning');
+		if (markBuildOnWarning != undefined){
+			p.markBuildOn.warning = markBuildOnWarning;
+		}
+		
 
 		if (keptnApiEndpointConn !== undefined) {
 			const keptnApiEndpoint: string | undefined = tl.getEndpointUrl(keptnApiEndpointConn, false);
@@ -173,7 +197,15 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 		tl.setResult(tl.TaskResult.Succeeded, "Keptn evaluation went well. Score = " + evaluationScore);
 	}
 	else{
-		tl.setResult(tl.TaskResult.SucceededWithIssues, "Keptn evaluation " +  evaluationResult + ". Score = " + evaluationScore);
+		let message =  "Keptn evaluation " +  evaluationResult + ". Score = " + evaluationScore;
+		let markBuild = input.markBuildOn[evaluationScore];
+		if (markBuild == 'NOTHING'){
+			console.log(message);
+		}
+		else{
+			tl.logIssue(logIssueMap[markBuild], message);
+			tl.setResult(completeTaskMap[markBuild], message);
+		}
 	}
 	if (input.keptnBridgeEndpoint != undefined){
 		console.log("Link to Bridge: " + input.keptnBridgeEndpoint + "/trace/" + keptnContext);
