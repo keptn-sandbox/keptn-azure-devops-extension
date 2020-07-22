@@ -23,9 +23,9 @@ describe('Wait for Keptn Event task tests', function () {
 		console.log(tr.succeeded);
 		console.log(tr.stdout);
 		console.log(tr.stderr);
-	    assert.equal(tr.succeeded, true, 'should have succeeded');
-	    assert.equal(tr.warningIssues.length, 1, "should have one warning");
-	    assert.equal(tr.errorIssues.length, 0, "should have no errors");
+	    assert.equal(tr.failed, true, 'should fail');
+	    assert.equal(tr.warningIssues.length, 0, "should have no warning");
+	    assert.equal(tr.errorIssues.length, 1, "should have one error");
 		
 	    done();
 	});  

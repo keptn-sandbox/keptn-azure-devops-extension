@@ -10,6 +10,7 @@ tmr.setInput('project', 'p');
 tmr.setInput('service', 's');
 tmr.setInput('stage', 'test');
 tmr.setInput('keptnApiEndpoint', '1234567');
+tmr.setInput('keptnContextVar', 'keptnContext');
 tmr.registerMockExport("getEndpointUrl", function(){return "https://api.keptn.mock"});
 tmr.registerMockExport("getEndpointAuthorizationParameter", function(){return "apitoken"});
 

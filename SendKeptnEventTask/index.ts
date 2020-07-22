@@ -6,7 +6,7 @@ import https = require('https');
 class EvalParams {
 	start: string = '';
 	end: string | undefined;
-	testStrategy: string = '';
+	keptnContextVar: string = '';
 }
 
 class Params {
@@ -89,12 +89,12 @@ function prepare():Params | undefined {
 			else{
 				pe.end = moment().format('YYYY-MM-DDTHH:MM:ssZ');
 			}
-			const testStrategy: string | undefined = tl.getInput('teststrategy');
-			if (testStrategy != undefined){
-				pe.testStrategy = testStrategy;
+			const keptnContextVar: string | undefined = tl.getInput('keptnContextVar');
+			if (keptnContextVar != undefined){
+				pe.keptnContextVar = keptnContextVar;
 			}
 			else{
-				badInput.push('teststrategy');
+				badInput.push('keptnContextVar');
 			}
 			if (badInput.length > 0) {
 				tl.setResult(tl.TaskResult.Failed, 'missing required input (' + badInput.join(',') + ')');
@@ -103,7 +103,7 @@ function prepare():Params | undefined {
 			p.evalParams = pe;
 			console.log('using start', start);
 			console.log('using end', end);
-			console.log('using testStrategy', 'testStrategy');
+			console.log('using keptnContextVar', 'keptnContextVar');
 		}
 		return p;
 	} catch (err) {
@@ -159,6 +159,7 @@ async function run(input:Params){
 	}catch(err){
 		throw err;
 	}
+	return "task finished";
 }
 
 /**
@@ -179,7 +180,7 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 				project: input.project,
 				service: input.service,
 				stage: input.stage,
-				teststrategy: input.evalParams!=undefined?input.evalParams.testStrategy:'null',
+				teststrategy: 'performance',
 				start: input.evalParams!=undefined?input.evalParams.start:'null',
 				end: input.evalParams!=undefined?input.evalParams.end:'null',
 				labels: {
@@ -193,10 +194,16 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 		}
 	};
 
-	console.log('sending ...');
+	console.log('sending startEvaluation event ...');
 	let response = await httpClient(options);
-	tl.setVariable('startEvaluationKeptnContext', response.data.keptnContext);
-	return response.data.keptnContext;
+	if (input.evalParams != undefined){
+		tl.setVariable(input.evalParams.keptnContextVar, response.data.keptnContext);
+		return "stored " + response.data.keptnContext + " in variable " + input.evalParams.keptnContextVar;
+	}
+	else{
+		tl.setVariable("keptnContext", response.data.keptnContext);
+		return "stored " + response.data.keptnContext + " in variable keptnContext";
+	}
 }
 
 /**

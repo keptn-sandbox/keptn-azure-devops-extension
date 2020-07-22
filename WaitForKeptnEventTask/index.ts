@@ -4,8 +4,25 @@ import https = require('https');
 
 class Params {
 	waitForEventType: string = '';
+	timeout: number = 3;
+	keptnContextVar: string = '';
 	keptnApiEndpoint: string = '';
 	keptnApiToken: string = '';
+	keptnBridgeEndpoint: string | undefined;
+	markBuildOn: {[index:string]:string} = {
+		"error": 'WARNING',
+		"warning": 'WARNING'
+	}
+}
+
+const logIssueMap:{[index:string]:tl.IssueType} = {
+	"WARNING":tl.IssueType.Warning,
+	"FAILED":tl.IssueType.Error
+}
+
+const completeTaskMap:{[index:string]:tl.TaskResult} = {
+	"WARNING":tl.TaskResult.SucceededWithIssues,
+	"FAILED":tl.TaskResult.Failed
 }
 
 /**
@@ -31,9 +48,36 @@ function prepare():Params | undefined {
             badInput.push('waitForEventType');
 		}
 		
+		let timeoutStr: string | undefined = tl.getInput('timeout');
+		if (timeoutStr != undefined){
+			p.timeout = +timeoutStr;
+		}
+		else{
+			badInput.push('timeout');
+		}
+
+		let keptnContextVar: string | undefined = tl.getInput('keptnContextVar');
+		if (keptnContextVar != undefined){
+			p.keptnContextVar = keptnContextVar;
+		}
+		else{
+			badInput.push('keptnContextVar');
+		}
+
+		let markBuildOnError: string | undefined = tl.getInput('markBuildOnError');
+		if (markBuildOnError != undefined){
+			p.markBuildOn.error = markBuildOnError;
+		}
+		let markBuildOnWarning: string | undefined = tl.getInput('markBuildOnWarning');
+		if (markBuildOnWarning != undefined){
+			p.markBuildOn.warning = markBuildOnWarning;
+		}
+		
+
 		if (keptnApiEndpointConn !== undefined) {
 			const keptnApiEndpoint: string | undefined = tl.getEndpointUrl(keptnApiEndpointConn, false);
 			const keptnApiToken: string | undefined = tl.getEndpointAuthorizationParameter(keptnApiEndpointConn, 'apitoken', false);
+			const keptnBridgeEndpoint: string | undefined = tl.getInput('bridgeURL');
 			
 			if (keptnApiEndpoint != undefined){
 				p.keptnApiEndpoint = keptnApiEndpoint;
@@ -46,6 +90,9 @@ function prepare():Params | undefined {
 			}
 			else{
 				badInput.push('keptnApiToken');
+			}
+			if (keptnBridgeEndpoint !== undefined) {
+				p.keptnBridgeEndpoint = keptnBridgeEndpoint;
 			}
 		}
 		else{
@@ -86,6 +133,7 @@ async function run(input:Params){
 	}catch(err){
 		throw err;
 	}
+	return "task finished";
 }
 
 /**
@@ -96,8 +144,8 @@ async function run(input:Params){
  * @param httpClient an instance of axios
  */
 async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
-	let keptnContext = tl.getVariable('startEvaluationKeptnContext');
-	console.log('keptnContext = ' + keptnContext);
+	let keptnContext = tl.getVariable(input.keptnContextVar);
+	console.log('using keptnContext = ' + keptnContext);
 	let evaluationScore = -1;
 	let evaluationResult = "empty";
 	let evaluationDetails:any;
@@ -109,6 +157,9 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 	};
 
 	let c=0;
+	let max = (input.timeout * 60) / 10
+	let out;
+	console.log("waiting in steps of 10 seconds, max " + max + " loops.");
 	do{
 		try{
 			await delay(10000); //wait 10 seconds
@@ -116,6 +167,7 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 			evaluationScore = response.data.data.evaluationdetails.score;
 			evaluationResult = response.data.data.evaluationdetails.result;
 			evaluationDetails = response.data.data.evaluationdetails;
+			out = response.data.data;
 		}catch(err){
 			if (err != undefined 
 				&& err.response != undefined 
@@ -124,9 +176,11 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 				&& err.response.data.message != undefined
 				&& err.response.data.code == '500'
 				&& err.response.data.message.startsWith('No Keptn sh.keptn.events.evaluation-done event found for context')){
-				if (++c > 10){ //2 minutes max
-					console.log(c);
+				if (++c > max){
 					evaluationResult = "not-found"
+				}
+				else {
+					console.log("wait another 10 seconds");
 				}
 			}
 			else{
@@ -135,12 +189,29 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 		}
 	}while (evaluationResult == "empty");
 
-	if (evaluationResult == "pass"){
+	if (evaluationResult == "not-found"){
+		tl.setResult(tl.TaskResult.Failed, "No Keptn sh.keptn.events.evaluation-done event found for context");
+		return "No Keptn sh.keptn.events.evaluation-done event found for context";
+	}
+	else if (evaluationResult == "pass"){
 		tl.setResult(tl.TaskResult.Succeeded, "Keptn evaluation went well. Score = " + evaluationScore);
 	}
 	else{
-		tl.setResult(tl.TaskResult.SucceededWithIssues, "Keptn evaluation " +  evaluationResult + ". Score = " + evaluationScore);
+		let message =  "Keptn evaluation " +  evaluationResult + ". Score = " + evaluationScore;
+		let markBuild = input.markBuildOn[evaluationScore];
+		if (markBuild == 'NOTHING'){
+			console.log(message);
+		}
+		else{
+			tl.logIssue(logIssueMap[markBuild], message);
+			tl.setResult(completeTaskMap[markBuild], message);
+		}
 	}
+	if (input.keptnBridgeEndpoint != undefined){
+		console.log("Link to Bridge: " + input.keptnBridgeEndpoint + "/trace/" + keptnContext);
+	}
+	console.log("************* Result from Keptn ****************");
+	console.log(JSON.stringify(out, null, 2));
 
 	return evaluationResult;
 }

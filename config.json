@@ -1,0 +1,41 @@
+{
+    "main": {
+        "vssVersion": "0.1.12",
+        "vssId": "keptn-integration",
+        "vssName": "Keptn Integration"
+    },
+    "dev": {
+        "vssVersion": "{{vssVersion}}",
+        "vssId": "{{vssId}}-dev",
+        "vssName": "DEV {{vssName}} {{vssVersion}}",
+        "vssPublisher": "bertvanderheyden",
+        "task": {
+            "PrepareKeptnEnvTask": {
+                "taskId" : "f423617e-bd6d-11ea-b3de-0242ac130004"
+            },
+            "SendKeptnEventTask": {
+                "taskId" : "f423bd7c-bd6d-11ea-b3de-0242ac130004"
+            },
+            "WaitForKeptnEventTask": {
+                "taskId" : "f423c2b8-bd6d-11ea-b3de-0242ac130004"
+            }
+        }
+    },
+    "public": {
+        "vssVersion": "{{vssVersion}}",
+        "vssId": "{{vssId}}",
+        "vssName": "{{vssName}}",
+        "vssPublisher": "RealdolmenDevOps",
+        "task": {
+            "PrepareKeptnEnvTask": {
+                "taskId" : "872b7882-7628-4b7a-9d45-6fd14907c03f"
+            },
+            "SendKeptnEventTask": {
+                "taskId" : "3dad0d84-35db-4852-9355-43fd02e2e147"
+            },
+            "WaitForKeptnEventTask": {
+                "taskId" : "2f7a32d0-699f-4693-8955-e5ff64e3f4a1"
+            }
+        }
+    }
+}

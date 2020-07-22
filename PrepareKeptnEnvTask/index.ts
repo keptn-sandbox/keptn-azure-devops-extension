@@ -196,6 +196,7 @@ async function run(input:Params){
 	}catch(err){
 		throw err;
 	}
+	return "task finished";
 }
 
 /**
