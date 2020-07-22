@@ -1,7 +1,7 @@
 {
   "id": "{{task.SendKeptnEventTask.taskId}}",
   "name": "SendKeptnEventTask",
-  "friendlyName": "Send cloud-event to Keptn",
+  "friendlyName": "{{task.SendKeptnEventTask.friendlyName}}",
   "description": "Send cloud-event to Keptn",
   "author": "Realdolmen (Bert Van der Heyden)",
   "helpMarkDown": "Send cloud-event to Keptn. Use startEvaluation to trigger Keptn to perform the SLI/SLO based validation.",

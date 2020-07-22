@@ -1,7 +1,7 @@
 {
   "id": "{{task.PrepareKeptnEnvTask.taskId}}",
   "name": "PrepareKeptnEnvTask",
-  "friendlyName": "Prepare Keptn environment",
+  "friendlyName": "{{task.PrepareKeptnEnvTask.friendlyName}}",
   "description": "Initialize Keptn environment with project and stage",
   "author": "Realdolmen (Bert Van der Heyden)",
   "helpMarkDown": "Initialize Keptn environment with project and stage",

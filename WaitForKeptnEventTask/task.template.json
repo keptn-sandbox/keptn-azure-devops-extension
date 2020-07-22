@@ -1,7 +1,7 @@
 {
   "id": "{{task.WaitForKeptnEventTask.taskId}}",
   "name": "WaitForKeptnEventTask",
-  "friendlyName": "Wait for Keptn Event",
+  "friendlyName": "{{task.WaitForKeptnEventTask.friendlyName}}",
   "description": "Wait for an answer of a Keptn event",
   "author": "Realdolmen (Bert Van der Heyden)",
   "helpMarkDown": "Wait for an answer of a Keptn event",
