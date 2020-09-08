@@ -12,8 +12,8 @@
   ],
   "demands": [],
   "version": {
-    "Major": 1,
-    "Minor": 5,
+    "Major": 2,
+    "Minor": 0,
     "Patch": 0
   },
   "groups": [
@@ -70,6 +70,7 @@
       "label": "Type of event",
       "defaultValue": "startEvaluation",
       "options": {
+        "deploymentFinished": "deployment-finished",
         "startEvaluation": "start-evaluation"
       },
       "required": true,
@@ -97,14 +98,49 @@
       "visibleRule": "eventType = startEvaluation"
     },
     {
+      "name": "deploymentURI",
+      "type": "string",
+      "label": "Deployment URI",
+      "required": true,
+      "helpMarkDown": "The public deploymentURI which will be used to execute the tests against",
+      "groupName": "keptn-event",
+      "visibleRule": "eventType = deploymentFinished"
+    },
+    {
+      "name": "testStrategy",
+      "type": "string",
+      "label": "Testing Strategy",
+      "required": true,
+      "helpMarkDown": "The testing stategy which is used to perform the tests",
+      "groupName": "keptn-event",
+      "visibleRule": "eventType = deploymentFinished"
+    },
+    {
+      "name": "image",
+      "type": "string",
+      "label": "Image",
+      "required": true,
+      "helpMarkDown": "The image which is deployed",
+      "groupName": "keptn-event",
+      "visibleRule": "eventType = deploymentFinished"
+    },
+    {
+      "name": "tag",
+      "type": "string",
+      "label": "Tag",
+      "required": true,
+      "helpMarkDown": "The tag of the deployment",
+      "groupName": "keptn-event",
+      "visibleRule": "eventType = deploymentFinished"
+    },
+    {
       "name": "keptnContextVar",
       "type": "string",
       "label": "KeptnContext output variable",
       "defaultValue": "keptnContext",
       "required": true,
       "helpMarkDown": "The name of the pipeline variable to store the keptnContext in",
-      "groupName": "keptn-event",
-      "visibleRule": "eventType = startEvaluation"
+      "groupName": "keptn-event"
     }
   ],
   "minimumAgentVersion": "1.83.0",

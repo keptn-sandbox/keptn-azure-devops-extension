@@ -1,6 +1,6 @@
 {
     "main": {
-        "vssVersion": "0.1.13",
+        "vssVersion": "0.1.15",
         "vssId": "keptn-integration",
         "vssName": "Keptn Integration"
     },
