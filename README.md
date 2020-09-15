@@ -25,7 +25,7 @@ This task is optional, but very usefull since it prepares a project, stage and s
 When you flag the Create/Initalize flag, you will see following in the keptn bridge if the project did not yet exist.
 ![Prepare Keptn environment result](screenshots/task-prepkeptnenv-result.png)
 
-It's not in the screenshot, but there is also a section where you could configure monitoring via [Dynatrace][dynatrace_link] or [Prometheus][prometheus_link] and upload an sli and slo file. See https://keptn.sh/docs/0.6.0/usecases/quality-gates/ for more details on Service Level Indicators and Service Level Objectives.
+It's not in the screenshot, but there is also a section where you could configure monitoring via [Dynatrace][dynatrace_link] or [Prometheus][prometheus_link] and upload an sli and slo file. See https://keptn.sh/docs/0.7.x/quality_gates/ for more details on Service Level Indicators and Service Level Objectives.
 
 ## Send Keptn event
 The main task in this extension.
