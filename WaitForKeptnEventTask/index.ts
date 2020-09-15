@@ -10,8 +10,9 @@ class Params {
 	keptnApiToken: string = '';
 	keptnBridgeEndpoint: string | undefined;
 	markBuildOn: {[index:string]:string} = {
-		"error": 'WARNING',
-		"warning": 'WARNING'
+		"fail": 'WARNING',
+		"warning": 'WARNING',
+		"info": 'NOTHING'
 	}
 }
 
@@ -64,9 +65,9 @@ function prepare():Params | undefined {
 			badInput.push('keptnContextVar');
 		}
 
-		let markBuildOnError: string | undefined = tl.getInput('markBuildOnError');
-		if (markBuildOnError != undefined){
-			p.markBuildOn.error = markBuildOnError;
+		let markBuildOnFail: string | undefined = tl.getInput('markBuildOnError');
+		if (markBuildOnFail != undefined){
+			p.markBuildOn.fail = markBuildOnFail;
 		}
 		let markBuildOnWarning: string | undefined = tl.getInput('markBuildOnWarning');
 		if (markBuildOnWarning != undefined){
@@ -189,6 +190,7 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 		}
 	}while (evaluationResult == "empty");
 
+	console.log("evaluationResult = " + evaluationResult);
 	if (evaluationResult == "not-found"){
 		tl.setResult(tl.TaskResult.Failed, "No Keptn sh.keptn.events.evaluation-done event found for context");
 		return "No Keptn sh.keptn.events.evaluation-done event found for context";
@@ -198,7 +200,8 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 	}
 	else{
 		let message =  "Keptn evaluation " +  evaluationResult + ". Score = " + evaluationScore;
-		let markBuild = input.markBuildOn[evaluationScore];
+		let markBuild = input.markBuildOn[evaluationResult];
+		console.log("markBuild = " + markBuild);
 		if (markBuild == 'NOTHING'){
 			console.log(message);
 		}
