@@ -15,11 +15,11 @@ First of all you need to configure the [Keptn][keptn_link] endpoint as a [`servi
 
 ![Keptn Service Connection](screenshots/service-connection.png)
 
-All you need is to configure is the API endpoint and the token. Note that the api endpoint structure has changed from version 0.7 from keptn onwards.
+All you need to configure is the API endpoint and the token. Note that the api endpoint structure has changed from version 0.7 from keptn onwards.
 > **Tip:** If you are using the keptn cli, they can be found in the $home/.keptn/.keptn file.
 
 ## Prepare Keptn environment
-This task is optional, but very usefull since it prepares a project, stage and service for you. It also puts these entities as variables on the pipeline for later use by the other tasks.
+This task is optional, but very usefull since it prepares a project, stage and service for you. It also puts these entities as variables on the pipeline for later use by the other tasks. Optionally you can also configure monitoring here and push an [sli and slo](https://keptn.sh/docs/concepts/quality_gates/) file to Keptn.
 ![Prepare Keptn environment config](screenshots/task-prepkeptnenv.png)
 
 When you flag the Create/Initalize flag, you will see following in the keptn bridge if the project did not yet exist.
@@ -47,18 +47,16 @@ Note that you can just flag "wait for evaluation done" when you want to wait for
 ![Send Keptn event result](screenshots/task-sendkeptnevent-result1.png)
 
 ## Wait for Keptn event
-This task listens for some time for a specific [Keptn][keptn_link] event. Currently only evaluation-done is supported. It waits for 10 seconds max.
+This task listens for some time for a specific [Keptn][keptn_link] event. Currently only evaluation-done is supported. It waits for a configurable amount of minutes.
 Prerequisite of this task is the Send [Keptn][keptn_link] Event task which puts the keptnContext as a variable on the pipeline. This task uses this variable to capture the result.
 
 ![Wait for Keptn event config](screenshots/task-waitforkeptnevent.png)
 
-In case of evaluation-done, it will give a warning whenever the lighthouse service did not indicate a 'pass'. So both warning as error in [Keptn][keptn_link] will result in a 'succeeded with issues' here.
+You can configure what should happen with the pipeline on a warning or fail from keptn. In this case it will give a warning whenever the lighthouse service did not indicate a 'pass'. So both warning as fail in [Keptn][keptn_link] will result in a 'succeeded with issues' here.
 
 ![Wait for Keptn event result](screenshots/task-waitforkeptnevent-result.png)
 
 ## Release notes ##
-* **1.0.0**
-** First draft version
 * **0.1.4**
 ** First public version
 * **0.1.5**
@@ -67,6 +65,9 @@ In case of evaluation-done, it will give a warning whenever the lighthouse servi
 ** Github tickets 16, 14, 2, 7, 17, 18, 8, 19, 10
 * **0.1.15**
 ** Added support for the deployment-finished event
+* **0.1.17**
+** Github tickets 32: some changes to support keptn 0.7 and higher
+** Updated README.md
 
 Created by `Bert Van der Heyden, RealDolmen - a GFI group company`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration

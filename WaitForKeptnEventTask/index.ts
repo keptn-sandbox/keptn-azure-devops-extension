@@ -175,8 +175,14 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 				&& err.response.data != undefined
 				&& err.response.data.code != undefined
 				&& err.response.data.message != undefined
-				&& err.response.data.code == '500'
-				&& err.response.data.message.startsWith('No Keptn sh.keptn.events.evaluation-done event found for context')){
+				&& (
+					err.response.data.code == '500' || 
+					err.response.data.code == '404') //From Keptn 0.7 onwards a 404 is thrown in stead of 500
+				&& (
+					err.response.data.message.startsWith('No Keptn sh.keptn.events.evaluation-done event found for context') || 
+					err.response.data.message.startsWith('No sh.keptn.events.evaluation-done event found for Keptn context')
+				   )
+				){
 				if (++c > max){
 					evaluationResult = "not-found"
 				}

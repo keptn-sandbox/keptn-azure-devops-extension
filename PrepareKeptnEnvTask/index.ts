@@ -111,6 +111,29 @@ async function run(input:Params){
 			})
 		});
 
+		let keptnVersion;
+		//Check which version of Keptn we have here
+		{
+			let options = {
+				method: <Method>"GET",
+				url: input.keptnApiEndpoint + '/v1/metadata',
+				headers: {'x-token': input.keptnApiToken},
+				validateStatus: (status:any) => status === 200 || status === 404
+			};
+		
+			let response = await httpClient(options);
+			if (response.status === 200){
+				console.log('metadata endpoint exists...');
+				keptnVersion = response.data.keptnversion;
+			}
+			else if (response.status === 404){
+				keptnVersion = '0.6'
+			}
+			console.log('keptnVersion = ' + keptnVersion);
+			tl.setVariable('keptnVersion', keptnVersion);
+		}
+
+		
 		{ //scope verify and create project if needed
 			let options = {
 				method: <Method>"GET",
@@ -187,10 +210,10 @@ async function run(input:Params){
 			let response = await httpClient(options);
 
 			if (input.sliPath != undefined){
-				await addResource(input, input.sliPath, input.monitoring + '/sli.yaml', httpClient);
+				await addResource(input, input.sliPath, input.monitoring + '/sli.yaml', httpClient, keptnVersion);
 			}
 			if (input.sloPath != undefined){
-				await addResource(input, input.sloPath, 'slo.yaml', httpClient);
+				await addResource(input, input.sloPath, 'slo.yaml', httpClient, keptnVersion);
 			}
 		}
 	}catch(err){
@@ -207,12 +230,16 @@ async function run(input:Params){
  * @param remoteUri remote Target path
  * @param httpClient an instance of axios
  */
-async function addResource(input:Params, localPath:string, remoteUri:string, httpClient:AxiosInstance){
+async function addResource(input:Params, localPath:string, remoteUri:string, httpClient:AxiosInstance, keptnVersion:string){
 	console.log('adding resource ' + localPath + ' to keptn target ' + remoteUri);
 	let resourceContent = fs.readFileSync(localPath,'utf8');
+	let endpointUri = '/configuration-service/v1/project/';
+	if (keptnVersion == '0.6'){
+		endpointUri = '/v1/project/';
+	}
 	let options = {
 		method: <Method>"POST",
-		url: input.keptnApiEndpoint + '/v1/project/' + input.project + '/stage/' + input.stage + '/service/' + input.service + '/resource',
+		url: input.keptnApiEndpoint + endpointUri + input.project + '/stage/' + input.stage + '/service/' + input.service + '/resource',
 		headers: {'x-token': input.keptnApiToken},
 		data: {
 			resources: [
