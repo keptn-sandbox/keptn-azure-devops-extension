@@ -226,11 +226,11 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 				start: input.evalParams!=undefined?input.evalParams.start:'null',
 				end: input.evalParams!=undefined?input.evalParams.end:'null',
 				labels: {
+					buildId: tl.getVariable("Build.BuildNumber"),
 					definition: tl.getVariable("Release.DefinitionName"),
-					buildnr: tl.getVariable("Build.BuildNumber"),
 					runby: tl.getVariable("Build.QueuedBy"),
 					environment : tl.getVariable("Environment.Name"),
-					ciBackLink : tl.getVariable("Release.ReleaseWebURL")
+					pipeline : tl.getVariable("Release.ReleaseWebURL")
 				}
 			}
 		}
@@ -274,7 +274,7 @@ async function deploymentFinished(input:Params, httpClient:AxiosInstance){
 					definition: tl.getVariable("Release.DefinitionName"),
 					runby: tl.getVariable("Build.QueuedBy"),
 					environment : tl.getVariable("Environment.Name"),
-					ciBackLink : tl.getVariable("Release.ReleaseWebURL")
+					pipeline : tl.getVariable("Release.ReleaseWebURL")
 				}
 			}
 		}
