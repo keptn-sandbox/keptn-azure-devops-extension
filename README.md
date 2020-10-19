@@ -29,9 +29,18 @@ It's not in the screenshot, but there is also a section where you could configur
 
 ## Send Keptn event
 The main task in this extension.
-- By sending the `configuration-changed` cloud-event to [Keptn][keptn_link], you can trigger [Keptn][keptn_link] to perform a deployment. (not yet implemented)
+- By sending the `configuration-changed` cloud-event to [Keptn][keptn_link], you can trigger [Keptn][keptn_link] to perform a deployment of an image.
 - By sending the `deployment-finished` cloud-event to [Keptn][keptn_link], you can trigger your load / performance tests to be executed.
 - By sending the `start-evaluation` cloud-event to [Keptn][keptn_link], you can trigger Lighthouse to perform automatic validation of your performance tests.
+
+configuration-changed requires some extra parameters:
+- `image`: the container image to be deployed
+
+deployment-finished requires some extra parameters:
+- `deploymentURI`: The public deploymentURI which will be used to execute the tests against
+- `testStrategy`: The testing stategy which is used to perform the tests
+- `image`: the container image to be deployed
+- `tag`: The tag of the deployment
 
 start-evaluation requires some extra parameters:
 - `startTime`: format needs to be "yyyy-MM-ddTHH:mm:sszzz"
@@ -58,20 +67,24 @@ You can configure what should happen with the pipeline on a warning or fail from
 
 ## Release notes ##
 * **0.1.4**
-** First public version
+First public version
 * **0.1.5**
-** Added SLI and SLO upload
+Added SLI and SLO upload
 * **0.1.14**
-** Github tickets 16, 14, 2, 7, 17, 18, 8, 19, 10
+Github tickets 16, 14, 2, 7, 17, 18, 8, 19, 10
 * **0.1.15**
-** Added support for the deployment-finished event
+Added support for the deployment-finished event
 * **0.1.17**
-** Github tickets 32: some changes to support keptn 0.7 and higher
-** Updated README.md
+Github ticket 32: some changes to support keptn 0.7 and higher
+Updated README.md
+* **1.0.0**
+Github ticket 6 beïng implementation of the configuration changed event
+Updated README.md
 
-Created by `Bert Van der Heyden, RealDolmen - a GFI group company`.
+Created by `Bert Van der Heyden, RealDolmen - an Inetum company`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration
-> Want to know more about our offering regarding [Dynatrace][dynatrace_link] and [Keptn][keptn_link], please contact us: https://www.realdolmen.com/en/solution/digital-performance-management
+> Want to know more about our offering regarding [Dynatrace][dynatrace_link] and [Keptn][keptn_link]? Please contact us: https://www.realdolmen.com/en/solution/digital-performance-management
+> Looking for official support for this plugin? See: https://www.realdolmen.com/en/solution/cicd-pipeline-quality-gates
 
 [keptn_link]: https://keptn.sh
 [dynatrace_link]: https://dynatrace.com

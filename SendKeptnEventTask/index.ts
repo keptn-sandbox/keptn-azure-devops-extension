@@ -15,6 +15,10 @@ class DeploymentFinishedParams {
 	image: string = '';
 }
 
+class ConfigurationChangedParams {
+	image: string = '';
+}
+
 class Params {
 	eventType: string = '';
 	project: string = '';
@@ -22,9 +26,10 @@ class Params {
 	stage: string = '';
 	keptnApiEndpoint: string = '';
 	keptnApiToken: string = '';
+	keptnContextVar: string = '';
 	evalParams: EvalParams | undefined;
 	deployFinishedParams: DeploymentFinishedParams | undefined;
-	keptnContextVar: string = '';
+	configChangedParams: ConfigurationChangedParams | undefined;
 }
 
 /**
@@ -141,6 +146,19 @@ function prepare():Params | undefined {
 			console.log('using tag', tag);
 			console.log('using image', image);
 		}
+		else if (p.eventType == 'configurationChanged'){
+			let pc = new ConfigurationChangedParams();
+			const image: string | undefined = tl.getInput('image');
+			if (image != undefined){
+				pc.image = image;
+			}
+			else{
+				badInput.push('image');
+			}
+			
+			p.configChangedParams = pc;
+			console.log('using image', image);
+		}
 		if (badInput.length > 0) {
 			tl.setResult(tl.TaskResult.Failed, 'missing required input (' + badInput.join(',') + ')');
 			return;
@@ -187,8 +205,9 @@ async function run(input:Params){
 			let keptnContext = await startEvaluation(input, axiosInstance);
 			return keptnContext;
 		}
-		else if (input.eventType == 'configurationChange'){
-			return 'not yet implemented!';
+		else if (input.eventType == 'configurationChanged'){
+			let keptnContext = await configurationChanged(input, axiosInstance);
+			return keptnContext;
 		}
 		else if (input.eventType == 'deploymentFinished' && input.deployFinishedParams != undefined){
 			let keptnContext = await deploymentFinished(input, axiosInstance);
@@ -281,6 +300,51 @@ async function deploymentFinished(input:Params, httpClient:AxiosInstance){
 	};
 
 	console.log('sending deploymentFinished event ...');
+	let response = await httpClient(options);
+	return storeKeptnContext(input, response);
+}
+
+/**
+ * Send the configuration.change event based on the input parameters
+ * 
+ * Example: sendConfigurationChangedEvent image:"docker.io/heydenb/simplenodeservice:3.0.0"
+ * Will trigger a full delivery workflow in keptn!
+ * 
+ * @param input Parameters
+ * @param httpClient an instance of axios
+ */
+async function configurationChanged(input:Params, httpClient:AxiosInstance){
+	let options = {
+		method: <Method>"POST",
+		url: input.keptnApiEndpoint + '/v1/event',
+		headers: {'x-token': input.keptnApiToken},
+		data: {
+			type: 'sh.keptn.event.configuration.change',
+			source: 'azure-devops-plugin',
+			specversion: '0.2',
+			data: {
+				project: input.project,
+				service: input.service,
+				stage: input.stage,
+				canary: {
+					action: "set",
+					value: 100
+				},
+				valuesCanary: {
+					image: input.configChangedParams!=undefined?input.configChangedParams.image:'null'
+				},
+				labels: {
+					buildId: tl.getVariable("Build.BuildNumber"),
+					definition: tl.getVariable("Release.DefinitionName"),
+					runby: tl.getVariable("Build.QueuedBy"),
+					environment : tl.getVariable("Environment.Name"),
+					pipeline : tl.getVariable("Release.ReleaseWebURL")
+				}
+			}
+		}
+	};
+
+	console.log('sending configuration-changed event ...');
 	let response = await httpClient(options);
 	return storeKeptnContext(input, response);
 }

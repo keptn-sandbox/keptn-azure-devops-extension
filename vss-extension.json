@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "keptn-integration",
-  "version": "0.1.18",
+  "version": "1.0.0",
   "name": "Keptn Integration",
   "description": "Integration of Keptn within your build or release pipeline.",
   "publisher": "RealdolmenDevOps",
@@ -21,6 +21,11 @@
   "content": {
     "details": {
       "path": "README.md"
+    }
+  },
+  "links": {
+    "support": {
+        "uri": "https://www.realdolmen.com/en/solution/digital-performance-management"
     }
   },
   "repository": {

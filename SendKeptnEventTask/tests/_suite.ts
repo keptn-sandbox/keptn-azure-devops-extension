@@ -30,7 +30,7 @@ describe('Send Keptn Event task tests', function () {
 	    done();
 	});
 	
-	it('must send out startevaluation', function(done: MochaDone) {
+	it('must send out start-evaluation', function(done: MochaDone) {
 		this.timeout(10000);
 
 		let tp = path.join(__dirname, 'sendstartevaluation.js');
@@ -50,10 +50,30 @@ describe('Send Keptn Event task tests', function () {
 	    done();
 	});
 
-	it('must send out deploymentfinished', function(done: MochaDone) {
+	it('must send out deployment-finished', function(done: MochaDone) {
 		this.timeout(10000);
 
 		let tp = path.join(__dirname, 'senddeploymentfinished.js');
+	    let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
+	
+		tr.run();
+		
+		console.log(tr.succeeded);
+		console.log(tr.stdout);
+		console.log(tr.stderr);
+
+	    assert.equal(tr.succeeded, true, 'should have succeeded');
+	    assert.equal(tr.errorIssues.length, 0, "should have no errors");
+		assert.equal(tr.stdout.indexOf('keptnApiEndpoint') >= 0, true, "should display keptnApiEndpoint");
+		assert.equal(tr.stdout.indexOf('sending') >= 0, true, "should be sending an event");
+		
+	    done();
+	});
+
+	it('must send out configuration-changed', function(done: MochaDone) {
+		this.timeout(10000);
+
+		let tp = path.join(__dirname, 'sendconfigurationchanged.js');
 	    let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
 	
 		tr.run();
