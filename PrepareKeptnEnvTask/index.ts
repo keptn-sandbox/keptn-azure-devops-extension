@@ -14,6 +14,7 @@ class Params {
 	monitoring: string | undefined;
 	sliPath: string | undefined;
 	sloPath: string | undefined;
+	dynatraceConfPath: string | undefined;
 }
 
 /**
@@ -80,6 +81,10 @@ function prepare():Params | undefined {
 			let sloPath = tl.getPathInput('slo', false, false);
 			if (sloPath != undefined){
 				p.sloPath = path.normalize(sloPath).trim();
+			}
+			let dynatraceConfPath = tl.getPathInput('dynatraceConf', false, false);
+			if (dynatraceConfPath != undefined){
+				p.dynatraceConfPath = path.normalize(dynatraceConfPath).trim();
 			}
 		}
 		if (badInput.length > 0) {
@@ -214,6 +219,9 @@ async function run(input:Params){
 			}
 			if (input.sloPath != undefined){
 				await addResource(input, input.sloPath, 'slo.yaml', httpClient, keptnVersion);
+			}
+			if (input.dynatraceConfPath != undefined){
+				await addResource(input, input.dynatraceConfPath, input.monitoring + '/dynatrace.conf', httpClient, keptnVersion);
 			}
 		}
 	}catch(err){

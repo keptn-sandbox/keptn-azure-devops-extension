@@ -13,7 +13,7 @@
   "demands": [],
   "version": {
     "Major": 1,
-    "Minor": 5,
+    "Minor": 6,
     "Patch": 0
   },
   "groups": [
@@ -102,6 +102,16 @@
       "required": false,
       "helpMarkDown": "Path to Service Level Objective configuration",
       "groupName": "config"
+    },
+    {
+      "name": "dynatraceConf",
+      "type": "filePath",
+      "label": "Path to dynatrace.conf file",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Path to dynatrace configuration",
+      "groupName": "config",
+      "visibleRule": "monitoring = dynatrace"
     }
   ],
   "minimumAgentVersion": "1.83.0",
