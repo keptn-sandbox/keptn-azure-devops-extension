@@ -74,18 +74,9 @@ function prepare():Params | undefined {
 		}
 		p.monitoring = tl.getInput('monitoring');
 		if (p.monitoring != undefined){
-			let sliPath = tl.getPathInput('sli', false, false);
-			if (sliPath != undefined){
-				p.sliPath = path.normalize(sliPath).trim();
-			}
-			let sloPath = tl.getPathInput('slo', false, false);
-			if (sloPath != undefined){
-				p.sloPath = path.normalize(sloPath).trim();
-			}
-			let dynatraceConfPath = tl.getPathInput('dynatraceConf', false, false);
-			if (dynatraceConfPath != undefined){
-				p.dynatraceConfPath = path.normalize(dynatraceConfPath).trim();
-			}
+			p.sliPath = filePathInput('sli');
+			p.sloPath = filePathInput('slo');
+			p.dynatraceConfPath = filePathInput('dynatraceConf');
 		}
 		if (badInput.length > 0) {
             tl.setResult(tl.TaskResult.Failed, 'missing required input (' + badInput.join(',') + ')');
@@ -101,6 +92,21 @@ function prepare():Params | undefined {
 	} catch (err) {
         tl.setResult(tl.TaskResult.Failed, err.message);
     }
+}
+
+/**
+ * Check the provided path input. Must be a file and existing.
+ * @param input 
+ */
+function filePathInput(input:string): string|undefined{
+	let p = tl.getPathInput(input, false, false);
+	if (p != undefined){
+		p = path.normalize(p).trim();
+		if (fs.existsSync(p) && fs.lstatSync(p).isFile()){
+			return p;
+		}
+	}
+	return undefined;
 }
 
 /**
@@ -140,18 +146,7 @@ async function run(input:Params){
 
 		
 		{ //scope verify and create project if needed
-			let options = {
-				method: <Method>"GET",
-				url: input.keptnApiEndpoint + '/configuration-service/v1/project/' + input.project,
-				headers: {'x-token': input.keptnApiToken},
-				validateStatus: (status:any) => status === 200 || status === 404
-			};
-		
-			let response = await httpClient(options);
-			if (response.status === 200){
-				console.log('project ' + input.project + ' already exists.');
-			}
-			else if (response.status === 404){
+			if (!await entityExists('project', input, httpClient)){
 				if (input.autoCreate){
 					let options = {
 						method: <Method>"POST",
@@ -166,9 +161,17 @@ async function run(input:Params){
 					let response = await httpClient(options);
 				}
 			}
+			else {
+				console.log('project ' + input.project + ' already exists.');
+			}
 		}
 
 		{ //scope verify and create service if needed
+			let loopcount = 0;
+			while (!await entityExists('stage', input, httpClient) && loopcount < 10){
+				await delay(2000);
+				loopcount++;
+			}
 			let options = {
 				method: <Method>"GET",
 				url: input.keptnApiEndpoint + '/configuration-service/v1/project/' + input.project + '/stage/'+ input.stage + '/service/' + input.service,
@@ -180,7 +183,7 @@ async function run(input:Params){
 			if (response.status === 200){
 				console.log('service ' + input.service + ' already exists.');
 			}
-			if (response.status === 404){
+			if (!await entityExists('service', input, httpClient)){
 				if (input.autoCreate){
 					let options = {
 						method: <Method>"POST",
@@ -193,6 +196,9 @@ async function run(input:Params){
 					console.log('create service ' + input.service);
 					let response = await httpClient(options);
 				}
+			}
+			else {
+				console.log('service ' + input.service + ' already exists.');
 			}
 		}
 
@@ -214,6 +220,12 @@ async function run(input:Params){
 			console.log('configure monitoring ' + input.monitoring);
 			let response = await httpClient(options);
 
+			let loopcount = 0;
+			while (!await entityExists('service', input, httpClient) && loopcount < 10){
+				await delay(2000);
+				loopcount++;
+			}
+
 			if (input.sliPath != undefined){
 				await addResource(input, input.sliPath, input.monitoring + '/sli.yaml', httpClient, keptnVersion);
 			}
@@ -228,6 +240,48 @@ async function run(input:Params){
 		throw err;
 	}
 	return "task finished";
+}
+
+/**
+ * 
+ * @param entityType 
+ * @param input 
+ * @param httpClient 
+ */
+async function entityExists(entityType:string, input:Params, httpClient:AxiosInstance){
+	let uri = '/configuration-service/v1';
+	if (entityType == 'project' || entityType == 'stage' || entityType == 'service'){
+		uri += '/project/' + input.project
+	}
+	if (entityType == 'stage' || entityType == 'service'){
+		uri += '/stage/' + input.stage
+	}
+	if (entityType == 'service'){
+		uri += '/service/' + input.service
+	}
+	let options = {
+		method: <Method>"GET",
+		url: input.keptnApiEndpoint + uri,
+		headers: {'x-token': input.keptnApiToken},
+		validateStatus: (status:any) => status === 200 || status === 404
+	};
+
+	let response = await httpClient(options);
+	if (response.status === 200){
+		return true;
+	}
+	else if (response.status === 404){
+		return false;
+	}
+	throw 'ResponseStatus is not as expected';
+}
+
+/**
+ * Helper function to wait an amount of millis.
+ * @param ms 
+ */
+function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
