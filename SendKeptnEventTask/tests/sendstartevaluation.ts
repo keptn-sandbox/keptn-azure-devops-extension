@@ -17,8 +17,13 @@ let keptnFile = fs.readFileSync(require('os').homedir() + '/.keptn/.keptn','utf8
 tmr.registerMockExport("getEndpointUrl", function(){return keptnFile.split('\n')[0]});
 tmr.registerMockExport("getEndpointAuthorizationParameter", function(){return keptnFile.split('\n')[1]});
 tmr.setInput('start', moment().subtract(1, 'days').format('YYYY-MM-DDTHH:MM:ssZ'));
+tmr.setInput('timeframe', '15m');
 tmr.setInput('teststrategy', 'performance');
-tmr.setVariableName("Build.DefinitionName", "TestDefinition");
+tmr.registerMockExport("getVariable", function(v:string){
+    if (v=="Build.DefinitionName") return "TestDefinition";
+    if (v=="keptnVersion") return "0.7.1";
+    return "i don't know";
+});
 
 tmr.run();
 

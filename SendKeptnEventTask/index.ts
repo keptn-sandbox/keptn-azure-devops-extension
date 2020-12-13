@@ -4,8 +4,9 @@ import moment from 'moment-timezone';
 import https = require('https');
 
 class EvalParams {
-	start: string = '';
+	start: string | undefined;
 	end: string | undefined;
+	timeframe: string | undefined;
 }
 
 class DeploymentFinishedParams {
@@ -95,19 +96,25 @@ function prepare():Params | undefined {
 			if (start != undefined){
 				pe.start = start;
 			}
-			else{
-				badInput.push('start');
-			}
 			const end: string | undefined = tl.getInput('end');
 			if (end != undefined){
 				pe.end = end;
 			}
-			else{
-				pe.end = moment().format('YYYY-MM-DDTHH:MM:ssZ');
+			const timeframe: string | undefined = tl.getInput('timeframe');
+			if (timeframe != undefined){
+				pe.timeframe = timeframe;
+				let keptnVersion = tl.getVariable('keptnVersion');
+				if (!isKeptnSupportingTimeframe(keptnVersion)){
+					console.log('note that timeframe will be ignored since keptn version ' + keptnVersion + ' does not support it!');
+				}
+			}
+			if (pe.start == undefined && pe.end == undefined && pe.timeframe == undefined){
+				pe.timeframe = '30m';
 			}
 			p.evalParams = pe;
 			console.log('using start', start);
 			console.log('using end', end);
+			console.log('using timeframe', timeframe);
 		}
 		else if (p.eventType == 'deploymentFinished'){
 			let pd = new DeploymentFinishedParams();
@@ -229,7 +236,7 @@ async function run(input:Params){
  * @param httpClient an instance of axios
  */
 async function startEvaluation(input:Params, httpClient:AxiosInstance){
-	let options = {
+	let options:any = {
 		method: <Method>"POST",
 		url: input.keptnApiEndpoint + '/v1/event',
 		headers: {'x-token': input.keptnApiToken},
@@ -254,6 +261,10 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 			}
 		}
 	};
+	//Starting from Keptn 0.7.3 we can use timeframe
+	if (isKeptnSupportingTimeframe(tl.getVariable('keptnVersion'))){
+		options.data.data.timeframe = input.evalParams!=undefined?input.evalParams.timeframe:'null';
+	}
 
 	console.log('sending startEvaluation event ...');
 	let response = await httpClient(options);
@@ -358,6 +369,20 @@ function storeKeptnContext (input:Params, response:any){
 		tl.setVariable("keptnContext", response.data.keptnContext);
 		return "stored " + response.data.keptnContext + " in variable keptnContext";
 	}
+}
+
+/**
+ * Helper function to determine if timeframe is supported
+ * @param keptnVersion 
+ */
+function isKeptnSupportingTimeframe(keptnVersion:string|undefined):boolean{
+	if (keptnVersion == undefined){
+		return true;
+	}
+	if (keptnVersion != '0.6' && keptnVersion != '0.7.0' && keptnVersion != '0.7.1' && keptnVersion != '0.7.2'){
+		return true;
+	}
+	return false;
 }
 
 /**

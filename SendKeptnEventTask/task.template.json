@@ -13,7 +13,7 @@
   "demands": [],
   "version": {
     "Major": 2,
-    "Minor": 2,
+    "Minor": 3,
     "Patch": 0
   },
   "groups": [
@@ -83,8 +83,8 @@
       "type": "string",
       "label": "Start time for the evaluation",
       "defaultValue": "",
-      "required": true,
-      "helpMarkDown": "Format: {yyyy-MM-ddTHH:mm:sszzz}",
+      "required": false,
+      "helpMarkDown": "Format: {yyyy-MM-ddTHH:mm:sszzz}. When not provided, defaults to timeframe.",
       "groupName": "keptn-event",
       "visibleRule": "eventType = startEvaluation"
     },
@@ -95,6 +95,16 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "Format: {yyyy-MM-ddTHH:mm:sszzz}. When not provided, current time is used.",
+      "groupName": "keptn-event",
+      "visibleRule": "eventType = startEvaluation"
+    },
+    {
+      "name": "timeframe",
+      "type": "string",
+      "label": "Timeframe for the evaluation",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Format: for example '15m' goes 15 minutes back from now. When not provided, start - end is used. When they are also empty default is 30m. Note that this property is only supported from Keptn 0.7.3 onwards.",
       "groupName": "keptn-event",
       "visibleRule": "eventType = startEvaluation"
     },
