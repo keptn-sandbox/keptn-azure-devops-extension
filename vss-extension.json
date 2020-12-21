@@ -1,8 +1,8 @@
 {
   "manifestVersion": 1,
   "id": "keptn-integration-dev",
-  "version": "1.0.5",
-  "name": "DEV Keptn Integration 1.0.5",
+  "version": "1.0.8",
+  "name": "DEV Keptn Integration 1.0.8",
   "description": "Integration of Keptn within your build or release pipeline.",
   "publisher": "bertvanderheyden",
   "targets": [{
@@ -105,6 +105,9 @@
     },
     {
       "path": "WaitForKeptnEventTask"
+    },
+    {
+      "path": "AddKeptnResourceTask"
     }
   ]
 }

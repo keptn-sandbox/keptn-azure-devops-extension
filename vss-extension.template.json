@@ -105,6 +105,9 @@
     },
     {
       "path": "WaitForKeptnEventTask"
+    },
+    {
+      "path": "AddKeptnResourceTask"
     }
   ]
 }

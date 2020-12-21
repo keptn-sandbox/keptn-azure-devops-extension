@@ -84,7 +84,7 @@ Updated README.md
 Github ticket 30: added support to upload dynatrace.conf file.
 Added support for timeframe in the StartEvaluation event. Available since Keptn 0.7.3.
 Updated README.md
-* **1.0.6**
+* **1.0.8**
 Added support for custom labels
 Added separate task to upload resources to Keptn
 Updated README.md
