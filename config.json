@@ -1,6 +1,6 @@
 {
     "main": {
-        "vssVersion": "1.0.5",
+        "vssVersion": "1.0.6",
         "vssId": "keptn-integration",
         "vssName": "Keptn Integration"
     },
@@ -21,6 +21,10 @@
             "WaitForKeptnEventTask": {
                 "taskId" : "f423c2b8-bd6d-11ea-b3de-0242ac130004",
                 "friendlyName" : "Wait for Keptn Event DEV-{{vssVersion}}"
+            },
+            "AddKeptnResourceTask": {
+                "taskId" : "f423c3f9-bd6d-11ea-b3de-0242ac130004",
+                "friendlyName" : "Add Keptn Resource DEV-{{vssVersion}}"
             }
         }
     },
@@ -41,6 +45,10 @@
             "WaitForKeptnEventTask": {
                 "taskId" : "2f7a32d0-699f-4693-8955-e5ff64e3f4a1",
                 "friendlyName" : "Wait for Keptn Event"
+            },
+            "AddKeptnResourceTask": {
+                "taskId" : "c800edec-4390-11eb-b378-0242ac130002",
+                "friendlyName" : "Add Keptn Resource"
             }
         }
     }

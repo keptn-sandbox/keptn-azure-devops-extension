@@ -13,7 +13,7 @@
   "demands": [],
   "version": {
     "Major": 2,
-    "Minor": 3,
+    "Minor": 5,
     "Patch": 0
   },
   "groups": [
@@ -134,6 +134,14 @@
       "helpMarkDown": "The image which is deployed",
       "groupName": "keptn-event",
       "visibleRule": "eventType = deploymentFinished || eventType = configurationChanged"
+    },
+    {
+      "name": "labels",
+      "type": "multiLine",
+      "label": "Labels",
+      "required": false,
+      "helpMarkDown": "You can add a list of key-value pairs (example 'key:value' use semicolon) separated by a new line. You are able to extend or overwrite the default labels this way.\nDefault labels are:\n- buildId: $(Build.BuildNumber)\n- definition: $(Release.DefinitionName)\n- runby: $(Build.QueuedBy)\n- environment : $(Environment.Name)\n- pipeline : $(Release.ReleaseWebURL)",
+      "groupName": "keptn-event"
     },
     {
       "name": "tag",

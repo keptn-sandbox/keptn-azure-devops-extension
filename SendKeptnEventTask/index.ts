@@ -104,6 +104,7 @@ function prepare():Params | undefined {
 			if (timeframe != undefined){
 				pe.timeframe = timeframe;
 				let keptnVersion = tl.getVariable('keptnVersion');
+				
 				if (!isKeptnSupportingTimeframe(keptnVersion)){
 					console.log('note that timeframe will be ignored since keptn version ' + keptnVersion + ' does not support it!');
 				}
@@ -251,13 +252,7 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 				teststrategy: 'performance',
 				start: input.evalParams!=undefined?input.evalParams.start:'null',
 				end: input.evalParams!=undefined?input.evalParams.end:'null',
-				labels: {
-					buildId: tl.getVariable("Build.BuildNumber"),
-					definition: tl.getVariable("Release.DefinitionName"),
-					runby: tl.getVariable("Build.QueuedBy"),
-					environment : tl.getVariable("Environment.Name"),
-					pipeline : tl.getVariable("Release.ReleaseWebURL")
-				}
+				labels: parseLabels()
 			}
 		}
 	};
@@ -299,13 +294,7 @@ async function deploymentFinished(input:Params, httpClient:AxiosInstance){
 				deploymentURIPublic: input.deployFinishedParams!=undefined?input.deployFinishedParams.deploymentURI:'null',
 				tag: input.deployFinishedParams!=undefined?input.deployFinishedParams.tag:'null',
 				image: input.deployFinishedParams!=undefined?input.deployFinishedParams.image:'null',
-				labels: {
-					buildId: tl.getVariable("Build.BuildNumber"),
-					definition: tl.getVariable("Release.DefinitionName"),
-					runby: tl.getVariable("Build.QueuedBy"),
-					environment : tl.getVariable("Environment.Name"),
-					pipeline : tl.getVariable("Release.ReleaseWebURL")
-				}
+				labels: parseLabels()
 			}
 		}
 	};
@@ -344,13 +333,7 @@ async function configurationChanged(input:Params, httpClient:AxiosInstance){
 				valuesCanary: {
 					image: input.configChangedParams!=undefined?input.configChangedParams.image:'null'
 				},
-				labels: {
-					buildId: tl.getVariable("Build.BuildNumber"),
-					definition: tl.getVariable("Release.DefinitionName"),
-					runby: tl.getVariable("Build.QueuedBy"),
-					environment : tl.getVariable("Environment.Name"),
-					pipeline : tl.getVariable("Release.ReleaseWebURL")
-				}
+				labels: parseLabels()
 			}
 		}
 	};
@@ -359,6 +342,33 @@ async function configurationChanged(input:Params, httpClient:AxiosInstance){
 	let response = await httpClient(options);
 	return storeKeptnContext(input, response);
 }
+
+/**
+ * Helper function to parse the labels
+ */
+function parseLabels():any{
+	let labels:any = {
+		buildId: tl.getVariable("Build.BuildNumber"),
+		definition: tl.getVariable("Release.DefinitionName"),
+		runby: tl.getVariable("Build.QueuedBy"),
+		environment : tl.getVariable("Environment.Name"),
+		pipeline : tl.getVariable("Release.ReleaseWebURL")
+	};
+
+	const labelsConfig: string | undefined = tl.getInput('labels');
+	if (labelsConfig != undefined && labelsConfig.trim().length > 0){
+		let aLabelsConfig = labelsConfig.trim().split(/\r?\n/);
+		aLabelsConfig.forEach(function(pair){
+			let aPair = pair.split(':');
+			if (aPair.length>=2){
+				labels[aPair[0].trim()]=aPair[1].trim();
+			} 
+		});
+	}
+
+	return labels;
+}
+export { parseLabels as parseLabels }
 
 function storeKeptnContext (input:Params, response:any){
 	if (input.keptnContextVar != undefined){

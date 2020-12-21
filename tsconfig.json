@@ -10,6 +10,7 @@
   "include": [
     "./PrepareKeptnEnvTask/**/*",
     "./SendKeptnEventTask/**/*",
-    "./WaitForKeptnEventTask/**/*"
+    "./WaitForKeptnEventTask/**/*",
+    "./AddKeptnResourceTask/**/*"
   ]
 }

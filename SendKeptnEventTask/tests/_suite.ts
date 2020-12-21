@@ -103,5 +103,6 @@ describe('Send Keptn Event task tests', function () {
 		assert.match(tr.errorIssues[0], new RegExp('^missing required input.*$'), 'error issue output');
 
 		done();
-    });    
+	});
+	
 });

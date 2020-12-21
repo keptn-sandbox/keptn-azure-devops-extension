@@ -80,6 +80,14 @@ Updated README.md
 * **1.0.0**
 Github ticket 6 beïng implementation of the configuration changed event
 Updated README.md
+* **1.0.5**
+Github ticket 30: added support to upload dynatrace.conf file.
+Added support for timeframe in the StartEvaluation event. Available since Keptn 0.7.3.
+Updated README.md
+* **1.0.6**
+Added support for custom labels
+Added separate task to upload resources to Keptn
+Updated README.md
 
 Created by `Bert Van der Heyden, RealDolmen - an Inetum company`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration

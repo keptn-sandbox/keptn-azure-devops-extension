@@ -10,11 +10,8 @@ class Params {
 	stage: string = '';
 	keptnApiEndpoint: string = '';
 	keptnApiToken: string = '';
-	autoCreate: boolean | undefined;
-	monitoring: string | undefined;
-	sliPath: string | undefined;
-	sloPath: string | undefined;
-	dynatraceConfPath: string | undefined;
+	resourceContentPath: string | undefined;
+	resourceUri: string | undefined;
 }
 
 /**
@@ -27,7 +24,6 @@ function prepare():Params | undefined {
 		
 		let p = new Params();
 		let badInput=[];
-		p.autoCreate = tl.getBoolInput('autoCreate');
 		const project: string | undefined = tl.getInput('project');
 		if (project !== undefined) {
 			p.project = project;
@@ -72,12 +68,18 @@ function prepare():Params | undefined {
 		else{
 			badInput.push('keptnApiEndpoint');
 		}
-		p.monitoring = tl.getInput('monitoring');
-		if (p.monitoring != undefined){
-			p.sliPath = filePathInput('sli');
-			p.sloPath = filePathInput('slo');
-			p.dynatraceConfPath = filePathInput('dynatraceConf');
+		p.resourceContentPath = filePathInput('resourceContent');
+		if (p.resourceContentPath == undefined){
+			badInput.push('resourceContent');
 		}
+		const resourceUri: string | undefined = tl.getInput('resourceUri');
+		if (resourceUri !== undefined) {
+			p.resourceUri = resourceUri;
+		}
+		else{
+            badInput.push('resourceUri');
+		}
+		
 		if (badInput.length > 0) {
             tl.setResult(tl.TaskResult.Failed, 'missing required input (' + badInput.join(',') + ')');
             return;
@@ -87,6 +89,8 @@ function prepare():Params | undefined {
 		console.log('using project', p.project);
 		console.log('using service', p.service);
 		console.log('using stage', p.stage);
+		console.log('using resourceContentPath', p.resourceContentPath);
+		console.log('using resourceUri', p.resourceUri);
 
 		return p;
 	} catch (err) {
@@ -141,149 +145,15 @@ async function run(input:Params){
 				keptnVersion = '0.6'
 			}
 			console.log('keptnVersion = ' + keptnVersion);
-			tl.setVariable('keptnVersion', keptnVersion);
 		}
 
-		
-		{ //scope verify and create project if needed
-			if (!await entityExists('project', input, httpClient)){
-				if (input.autoCreate){
-					let options = {
-						method: <Method>"POST",
-						url: input.keptnApiEndpoint + '/v1/project',
-						headers: {'x-token': input.keptnApiToken},
-						data: {
-							name: input.project,
-							shipyard: Buffer.from("stages:\n   - name: \"" + input.stage + "\"\n     test_strategy: \"performance\"").toString('base64')
-						}
-					};
-					console.log('create project ' + input.project);
-					let response = await httpClient(options);
-				}
-			}
-			else {
-				console.log('project ' + input.project + ' already exists.');
-			}
-		}
-
-		{ //scope verify and create service if needed
-			let loopcount = 0;
-			while (!await entityExists('stage', input, httpClient) && loopcount < 10){
-				await delay(2000);
-				loopcount++;
-			}
-			let options = {
-				method: <Method>"GET",
-				url: input.keptnApiEndpoint + '/configuration-service/v1/project/' + input.project + '/stage/'+ input.stage + '/service/' + input.service,
-				headers: {'x-token': input.keptnApiToken},
-				validateStatus: (status:any) => status === 200 || status === 404
-			};
-		
-			let response = await httpClient(options);
-			if (response.status === 200){
-				console.log('service ' + input.service + ' already exists.');
-			}
-			if (!await entityExists('service', input, httpClient)){
-				if (input.autoCreate){
-					let options = {
-						method: <Method>"POST",
-						url: input.keptnApiEndpoint + '/v1/project/' + input.project + '/service',
-						headers: {'x-token': input.keptnApiToken},
-						data: {
-							serviceName: input.service
-						}
-					};
-					console.log('create service ' + input.service);
-					let response = await httpClient(options);
-				}
-				//Only send the configure-monitoring event once.
-				if (input.monitoring != undefined){
-					let options = {
-						method: <Method>"POST",
-						url: input.keptnApiEndpoint + '/v1/event',
-						headers: {'x-token': input.keptnApiToken},
-						data: {
-							type: 'sh.keptn.event.monitoring.configure',
-							source: 'AZDO',
-							data: {
-								project: input.project,
-								service: input.service,
-								type: input.monitoring
-							}
-						}
-					};
-					console.log('configure monitoring ' + input.monitoring);
-					let response = await httpClient(options);
-				}
-			}
-			else {
-				console.log('service ' + input.service + ' already exists.');
-			}
-		}
-
-		if (input.monitoring != undefined){
-			let loopcount = 0;
-			while (!await entityExists('service', input, httpClient) && loopcount < 10){
-				await delay(2000);
-				loopcount++;
-			}
-
-			if (input.sliPath != undefined){
-				await addResource(input, input.sliPath, input.monitoring + '/sli.yaml', httpClient, keptnVersion);
-			}
-			if (input.sloPath != undefined){
-				await addResource(input, input.sloPath, 'slo.yaml', httpClient, keptnVersion);
-			}
-			if (input.dynatraceConfPath != undefined){
-				await addResource(input, input.dynatraceConfPath, input.monitoring + '/dynatrace.conf', httpClient, keptnVersion);
-			}
+		if (input.resourceContentPath!=undefined && input.resourceUri!=undefined){
+			await addResource(input, input.resourceContentPath, input.resourceUri, httpClient, keptnVersion);
 		}
 	}catch(err){
 		throw err;
 	}
 	return "task finished";
-}
-
-/**
- * 
- * @param entityType 
- * @param input 
- * @param httpClient 
- */
-async function entityExists(entityType:string, input:Params, httpClient:AxiosInstance){
-	let uri = '/configuration-service/v1';
-	if (entityType == 'project' || entityType == 'stage' || entityType == 'service'){
-		uri += '/project/' + input.project
-	}
-	if (entityType == 'stage' || entityType == 'service'){
-		uri += '/stage/' + input.stage
-	}
-	if (entityType == 'service'){
-		uri += '/service/' + input.service
-	}
-	let options = {
-		method: <Method>"GET",
-		url: input.keptnApiEndpoint + uri,
-		headers: {'x-token': input.keptnApiToken},
-		validateStatus: (status:any) => status === 200 || status === 404
-	};
-
-	let response = await httpClient(options);
-	if (response.status === 200){
-		return true;
-	}
-	else if (response.status === 404){
-		return false;
-	}
-	throw 'ResponseStatus is not as expected';
-}
-
-/**
- * Helper function to wait an amount of millis.
- * @param ms 
- */
-function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**

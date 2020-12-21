@@ -1,10 +1,10 @@
 {
   "manifestVersion": 1,
-  "id": "keptn-integration",
+  "id": "keptn-integration-dev",
   "version": "1.0.5",
-  "name": "Keptn Integration",
+  "name": "DEV Keptn Integration 1.0.5",
   "description": "Integration of Keptn within your build or release pipeline.",
-  "publisher": "RealdolmenDevOps",
+  "publisher": "bertvanderheyden",
   "targets": [{
     "id": "Microsoft.VisualStudio.Services"
   }],
@@ -78,6 +78,15 @@
       "targets": [ "ms.vss-distributed-task.tasks" ],
       "properties": {
         "name": "WaitForKeptnEventTask"
+      }
+    },
+    {
+      "id": "add-keptn-resource",
+      "description": "Add a resource to Keptn",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [ "ms.vss-distributed-task.tasks" ],
+      "properties": {
+        "name": "AddKeptnResourceTask"
       }
     }
   ],

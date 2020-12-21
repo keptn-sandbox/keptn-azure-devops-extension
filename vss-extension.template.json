@@ -79,6 +79,15 @@
       "properties": {
         "name": "WaitForKeptnEventTask"
       }
+    },
+    {
+      "id": "add-keptn-resource",
+      "description": "Add a resource to Keptn",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [ "ms.vss-distributed-task.tasks" ],
+      "properties": {
+        "name": "AddKeptnResourceTask"
+      }
     }
   ],
   "files": [
