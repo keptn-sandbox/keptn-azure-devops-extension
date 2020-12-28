@@ -204,7 +204,7 @@ async function run(input:Params){
 						headers: {'x-token': input.keptnApiToken},
 						data: {
 							type: 'sh.keptn.event.monitoring.configure',
-							source: 'AZDO',
+							source: 'azure-devops-plugin',
 							data: {
 								project: input.project,
 								service: input.service,

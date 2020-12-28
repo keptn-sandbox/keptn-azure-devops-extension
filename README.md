@@ -1,11 +1,12 @@
 # Azure DevOps Keptn Integration
 
-Integration of [Keptn][keptn_link] within your TFS/VSTS/AZDO build. 
+Integration of [Keptn][keptn_link] within your Azure DevOps pipelines. 
 
-This extension includes 3 tasks which can be used to integrate your pipeline with the [Keptn][keptn_link] capabilities.
+This extension includes 4 tasks which can be used to integrate your pipeline with the [Keptn][keptn_link] capabilities.
 - Prepare [Keptn][keptn_link] environment
 - Send [Keptn][keptn_link] event
 - Wait for [Keptn][keptn_link] event
+- Add [Keptn][keptn_link] resource
 
 Watch the following Keptn Community Webinar to see the extension in action:
 [![Automating Quality Gates in Azure DevOps with Keptn](https://img.youtube.com/vi/vgCizWLVsPc/0.jpg)](https://www.youtube.com/watch?v=vgCizWLVsPc "Automating Quality Gates in Azure DevOps with Keptn")
@@ -16,7 +17,7 @@ First of all you need to configure the [Keptn][keptn_link] endpoint as a [`servi
 ![Keptn Service Connection](screenshots/service-connection.png)
 
 All you need to configure is the API endpoint and the token. Note that the api endpoint structure has changed from version 0.7 from keptn onwards.
-> **Tip:** If you are using the keptn cli, they can be found in the $home/.keptn/.keptn file.
+> **Tip:** The API Token can be found in the Keptn bridge behind the user icon in the upper right corner.
 
 ## Prepare Keptn environment
 This task is optional, but very usefull since it prepares a project, stage and service for you. It also puts these entities as variables on the pipeline for later use by the other tasks. Optionally you can also configure monitoring here and push an [sli and slo](https://keptn.sh/docs/concepts/quality_gates/) file to Keptn.
@@ -45,13 +46,19 @@ deployment-finished requires some extra parameters:
 start-evaluation requires some extra parameters:
 - `startTime`: format needs to be "yyyy-MM-ddTHH:mm:sszzz"
 - `endTime`: format needs to be "yyyy-MM-ddTHH:mm:sszzz"
-- `strategy`: by default performance
+- `timeframe`: If you don't want to use start and end time you could for example provide "15m" as value to evaluate the previous 15 minutes.
+
+All of the types supported here are sending labels to Keptn as well to provide extra context. The default labels are:
+- buildId: $(Build.BuildNumber)
+- definition: $(Release.DefinitionName)
+- runby: $(Build.QueuedBy)
+- environment : $(Environment.Name)
+- pipeline : $(Release.ReleaseWebURL)
+There is an optional text-area field called Labels where you can add a list of key-value pairs (example 'key:value' use semicolon) separated by a new line. You are able to extend or overwrite the default labels this way.
 
 > **Note:** the start and end time for the evaluation probably will come via variables from a previous task running the load tests. If you enter it manually for some reason Azure DevOps changes the date format. Which is again not recognized by [Keptn][keptn_link].
 
 ![Send Keptn event config](screenshots/task-sendkeptnevent.png)
-
-Note that you can just flag "wait for evaluation done" when you want to wait for the evaluation and pass / fail accordingly. See next task for more details
 
 ![Send Keptn event result](screenshots/task-sendkeptnevent-result1.png)
 
@@ -64,6 +71,11 @@ Prerequisite of this task is the Send [Keptn][keptn_link] Event task which puts 
 You can configure what should happen with the pipeline on a warning or fail from keptn. In this case it will give a warning whenever the lighthouse service did not indicate a 'pass'. So both warning as fail in [Keptn][keptn_link] will result in a 'succeeded with issues' here.
 
 ![Wait for Keptn event result](screenshots/task-waitforkeptnevent-result.png)
+
+## Add Keptn resource
+Although you can add the SLI, SLO and Dynatrace config files via the **Prepare Keptn Environment** task, there might be cases where you need to push additional files to Keptn. I am thinking about JMeter scripts for example or other config that can be used by Keptn services. That's when you could use this additional task.
+
+![Add Keptn Resource](screenshots/task-addresource.png)
 
 ## Release notes ##
 * **0.1.4**
@@ -84,7 +96,7 @@ Updated README.md
 Github ticket 30: added support to upload dynatrace.conf file.
 Added support for timeframe in the StartEvaluation event. Available since Keptn 0.7.3.
 Updated README.md
-* **1.0.8**
+* **1.1.0**
 Added support for custom labels
 Added separate task to upload resources to Keptn
 Updated README.md
