@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "keptn-integration",
-  "version": "1.0.8",
+  "version": "1.1.1",
   "name": "Keptn Integration",
   "description": "Integration of Keptn within your build or release pipeline.",
   "publisher": "RealdolmenDevOps",

@@ -75,7 +75,7 @@ You can configure what should happen with the pipeline on a warning or fail from
 ## Add Keptn resource
 Although you can add the SLI, SLO and Dynatrace config files via the **Prepare Keptn Environment** task, there might be cases where you need to push additional files to Keptn. I am thinking about JMeter scripts for example or other config that can be used by Keptn services. That's when you could use this additional task.
 
-![Add Keptn Resource](screenshots/task-addresource.png)
+![Add Keptn Resource](screenshots/task-add-resource.png)
 
 ## Release notes ##
 * **0.1.4**
@@ -100,6 +100,8 @@ Updated README.md
 Added support for custom labels
 Added separate task to upload resources to Keptn
 Updated README.md
+* **1.1.1**
+Bugfix packages Add Keptn Resource task 
 
 Created by `Bert Van der Heyden, RealDolmen - an Inetum company`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration

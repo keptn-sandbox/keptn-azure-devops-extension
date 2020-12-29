@@ -235,7 +235,7 @@ async function run(input:Params){
 				await addResource(input, input.sloPath, 'slo.yaml', httpClient, keptnVersion);
 			}
 			if (input.dynatraceConfPath != undefined){
-				await addResource(input, input.dynatraceConfPath, input.monitoring + '/dynatrace.conf', httpClient, keptnVersion);
+				await addResource(input, input.dynatraceConfPath, input.monitoring + '/dynatrace.conf.yaml', httpClient, keptnVersion);
 			}
 		}
 	}catch(err){
