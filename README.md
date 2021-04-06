@@ -102,6 +102,8 @@ Added separate task to upload resources to Keptn
 Updated README.md
 * **1.1.1**
 Bugfix packages Add Keptn Resource task 
+* **1.3.0**
+Added support for Keptn 0.8.x - quality gates 
 
 Created by `Bert Van der Heyden, RealDolmen - an Inetum company`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration
