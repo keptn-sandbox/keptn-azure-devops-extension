@@ -126,7 +126,16 @@ async function run(input:Params){
 			})
 		});
 		if (input.waitForEventType == 'evaluationDone'){
-			return waitForEvaluationDone(input, axiosInstance);
+			let keptnVersion = tl.getVariable('keptnVersion');
+			if (keptnVersion==null){
+				keptnVersion = '0.8.1'; //smart default
+			}
+			if (keptnVersion.startsWith('0.8')){
+				return waitForEvaluationDone(input, axiosInstance);
+			} 
+			else{
+				return waitForEvaluationDonePre08(input, axiosInstance);
+			}
 		}
 		else{
 			throw new Error('Unsupported eventType');
@@ -149,12 +158,61 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 	console.log('using keptnContext = ' + keptnContext);
 	let evaluationScore = -1;
 	let evaluationResult = "empty";
+
+	let options:any = {
+		method: <Method>"GET",
+		headers: {'x-token': input.keptnApiToken},
+		url: input.keptnApiEndpoint + '/mongodb-datastore/event?type=sh.keptn.event.evaluation.finished&keptnContext=' + keptnContext
+	}
+	
+	let c=0;
+	let max = (input.timeout * 60) / 10
+	let out;
+	console.log("waiting in steps of 10 seconds, max " + max + " loops.");
+	do{
+		await delay(10000); //wait 10 seconds
+		var response = await httpClient(options);
+		if (response.data.events != undefined && response.data.totalCount == 1){
+			out = response.data.events[0];
+			evaluationScore = out.data.evaluation.score;
+			evaluationResult = out.data.evaluation.result;
+		}
+		else {
+			if (++c > max){
+				evaluationResult = "not-found"
+			}
+			else {
+				console.log("wait another 10 seconds");
+			}
+		}
+	}while (evaluationResult == "empty");
+
+	handleEvaluationResult(evaluationResult, evaluationScore, keptnContext, input);
+
+	console.log("************* Result from Keptn ****************");
+	console.log(JSON.stringify(out, null, 2));
+
+	return evaluationResult;
+}
+
+/**
+ * Request the evaluation-done event based on the startEvaluationKeptnContext task variable.
+ * Try a couple of times since it can take a few seconds for keptn to evaluate.
+ * 
+ * @param input Parameters
+ * @param httpClient an instance of axios
+ */
+async function waitForEvaluationDonePre08(input:Params, httpClient:AxiosInstance){
+	let keptnContext = tl.getVariable(input.keptnContextVar);
+	console.log('using keptnContext = ' + keptnContext);
+	let evaluationScore = -1;
+	let evaluationResult = "empty";
 	let evaluationDetails:any;
 
-	let options = {
+	let options:any = {
 		method: <Method>"GET",
-		url: input.keptnApiEndpoint + '/v1/event?type=sh.keptn.events.evaluation-done&keptnContext=' + keptnContext,
-		headers: {'x-token': input.keptnApiToken}
+		headers: {'x-token': input.keptnApiToken},
+		url: input.keptnApiEndpoint + '/v1/event?type=sh.keptn.events.evaluation-done&keptnContext=' + keptnContext
 	};
 
 	let c=0;
@@ -196,6 +254,15 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 		}
 	}while (evaluationResult == "empty");
 
+	handleEvaluationResult(evaluationResult, evaluationScore, keptnContext, input);
+
+	console.log("************* Result from Keptn ****************");
+	console.log(JSON.stringify(out, null, 2));
+
+	return evaluationResult;
+}
+
+function handleEvaluationResult(evaluationResult:string, evaluationScore:number, keptnContext:string|undefined, input:Params){
 	console.log("evaluationResult = " + evaluationResult);
 	if (evaluationResult == "not-found"){
 		tl.setResult(tl.TaskResult.Failed, "No Keptn sh.keptn.events.evaluation-done event found for context");
@@ -219,10 +286,6 @@ async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
 	if (input.keptnBridgeEndpoint != undefined){
 		console.log("Link to Bridge: " + input.keptnBridgeEndpoint + "/trace/" + keptnContext);
 	}
-	console.log("************* Result from Keptn ****************");
-	console.log(JSON.stringify(out, null, 2));
-
-	return evaluationResult;
 }
 
 /**

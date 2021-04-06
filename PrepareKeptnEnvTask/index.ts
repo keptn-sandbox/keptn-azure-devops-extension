@@ -144,17 +144,16 @@ async function run(input:Params){
 			tl.setVariable('keptnVersion', keptnVersion);
 		}
 
-		
 		{ //scope verify and create project if needed
-			if (!await entityExists('project', input, httpClient)){
+			if (!await entityExists('project', input, httpClient, keptnVersion)){
 				if (input.autoCreate){
 					let options = {
 						method: <Method>"POST",
-						url: input.keptnApiEndpoint + '/v1/project',
+						url: input.keptnApiEndpoint + getAPIFor('project-post', keptnVersion) + '/project',
 						headers: {'x-token': input.keptnApiToken},
 						data: {
 							name: input.project,
-							shipyard: Buffer.from("stages:\n   - name: \"" + input.stage + "\"\n     test_strategy: \"performance\"").toString('base64')
+							shipyard: getShipyardFor(keptnVersion, input.stage)
 						}
 					};
 					console.log('create project ' + input.project);
@@ -168,13 +167,13 @@ async function run(input:Params){
 
 		{ //scope verify and create service if needed
 			let loopcount = 0;
-			while (!await entityExists('stage', input, httpClient) && loopcount < 10){
+			while (!await entityExists('stage', input, httpClient, keptnVersion) && loopcount < 10){
 				await delay(2000);
 				loopcount++;
 			}
 			let options = {
 				method: <Method>"GET",
-				url: input.keptnApiEndpoint + '/configuration-service/v1/project/' + input.project + '/stage/'+ input.stage + '/service/' + input.service,
+				url: input.keptnApiEndpoint + getAPIFor('project-get', keptnVersion) + '/project/' + input.project + '/stage/'+ input.stage + '/service/' + input.service,
 				headers: {'x-token': input.keptnApiToken},
 				validateStatus: (status:any) => status === 200 || status === 404
 			};
@@ -183,11 +182,11 @@ async function run(input:Params){
 			if (response.status === 200){
 				console.log('service ' + input.service + ' already exists.');
 			}
-			if (!await entityExists('service', input, httpClient)){
+			if (!await entityExists('service', input, httpClient, keptnVersion)){
 				if (input.autoCreate){
 					let options = {
 						method: <Method>"POST",
-						url: input.keptnApiEndpoint + '/v1/project/' + input.project + '/service',
+						url: input.keptnApiEndpoint + getAPIFor('project-post', keptnVersion) + '/project/' + input.project + '/service',
 						headers: {'x-token': input.keptnApiToken},
 						data: {
 							serviceName: input.service
@@ -200,7 +199,7 @@ async function run(input:Params){
 				if (input.monitoring != undefined){
 					let options = {
 						method: <Method>"POST",
-						url: input.keptnApiEndpoint + '/v1/event',
+						url: input.keptnApiEndpoint + getAPIFor('event-post', keptnVersion) + '/event',
 						headers: {'x-token': input.keptnApiToken},
 						data: {
 							type: 'sh.keptn.event.monitoring.configure',
@@ -223,7 +222,7 @@ async function run(input:Params){
 
 		if (input.monitoring != undefined){
 			let loopcount = 0;
-			while (!await entityExists('service', input, httpClient) && loopcount < 10){
+			while (!await entityExists('service', input, httpClient, keptnVersion) && loopcount < 10){
 				await delay(2000);
 				loopcount++;
 			}
@@ -250,8 +249,8 @@ async function run(input:Params){
  * @param input 
  * @param httpClient 
  */
-async function entityExists(entityType:string, input:Params, httpClient:AxiosInstance){
-	let uri = '/configuration-service/v1';
+async function entityExists(entityType:string, input:Params, httpClient:AxiosInstance, keptnVersion:string){
+	let uri = getAPIFor('project-get', keptnVersion);
 	if (entityType == 'project' || entityType == 'stage' || entityType == 'service'){
 		uri += '/project/' + input.project
 	}
@@ -270,12 +269,62 @@ async function entityExists(entityType:string, input:Params, httpClient:AxiosIns
 
 	let response = await httpClient(options);
 	if (response.status === 200){
+		if (response.data == null){
+			return false;
+		}
 		return true;
 	}
 	else if (response.status === 404){
 		return false;
 	}
 	throw 'ResponseStatus is not as expected';
+}
+
+function getAPIFor(apiType:string, keptnVersion:string){
+	if (apiType.startsWith('project-resource')){
+		if (keptnVersion == '0.6'){
+			return '/v1';
+		}
+		else{
+			return '/configuration-service/v1';
+		}
+	}
+	else if (apiType.startsWith('project')){
+		if (keptnVersion.startsWith('0.8')){
+			return "/controlPlane/v1"
+		}
+		else if (apiType == 'project-get'){
+			return '/configuration-service/v1';
+		}
+		else if (apiType == 'project-post'){
+			return '/v1';
+		}
+	}
+	else if (apiType.startsWith('event')){
+		return '/v1';
+	}
+	return "/unknown-api"
+}
+
+function getShipyardFor(keptnVersion:string, stage:string){
+	if (keptnVersion.startsWith('0.8')){
+		return Buffer.from(
+			"apiVersion: \"spec.keptn.sh/0.2.0\"\n"+
+			"kind: \"Shipyard\"\n"+
+			"metadata:\n"+
+			"  name: \"shipyard-azdo\"\n"+
+			"spec:\n"+
+			"  stages:\n"+
+			"    - name: \"" + stage + "\"")
+		.toString('base64');
+	}
+	else{
+		return Buffer.from(
+			"stages:\n"+
+			"  - name: \"" + stage + "\"\n"+
+			"    test_strategy: \"performance\"")
+			.toString('base64');
+	}
 }
 
 /**
@@ -297,13 +346,10 @@ function delay(ms: number) {
 async function addResource(input:Params, localPath:string, remoteUri:string, httpClient:AxiosInstance, keptnVersion:string){
 	console.log('adding resource ' + localPath + ' to keptn target ' + remoteUri);
 	let resourceContent = fs.readFileSync(localPath,'utf8');
-	let endpointUri = '/configuration-service/v1/project/';
-	if (keptnVersion == '0.6'){
-		endpointUri = '/v1/project/';
-	}
+	
 	let options = {
 		method: <Method>"POST",
-		url: input.keptnApiEndpoint + endpointUri + input.project + '/stage/' + input.stage + '/service/' + input.service + '/resource',
+		url: input.keptnApiEndpoint + getAPIFor("project-resource-post", keptnVersion) + "/project/" + input.project + '/stage/' + input.stage + '/service/' + input.service + '/resource',
 		headers: {'x-token': input.keptnApiToken},
 		data: {
 			resources: [

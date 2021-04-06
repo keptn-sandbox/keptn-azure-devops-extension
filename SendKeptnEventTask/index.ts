@@ -237,11 +237,45 @@ async function run(input:Params){
  * @param httpClient an instance of axios
  */
 async function startEvaluation(input:Params, httpClient:AxiosInstance){
+	let keptnVersion = tl.getVariable('keptnVersion');
+	if (keptnVersion==null){
+		keptnVersion = '0.8.1'; //smart default
+	}
+
 	let options:any = {
 		method: <Method>"POST",
-		url: input.keptnApiEndpoint + '/v1/event',
+		url: input.keptnApiEndpoint + getAPIFor('event-post', keptnVersion) + '/event',
 		headers: {'x-token': input.keptnApiToken},
-		data: {
+	};
+	//Starting from Keptn 0.7.3 we can use timeframe via the new evaluation endpoint
+	if (isKeptnSupportingTimeframe(keptnVersion)){
+		options.url = input.keptnApiEndpoint + getAPIFor('project-post', keptnVersion) + '/project/' + input.project + '/stage/'+ input.stage + '/service/' + input.service + '/evaluation'
+		let body:any = {
+			labels: parseLabels()
+		};
+		if (input.evalParams!=undefined && input.evalParams.start!=undefined){
+			body.start = input.evalParams.start;
+		}
+		if (input.evalParams!=undefined && input.evalParams.end!=undefined){
+			body.end = input.evalParams.end;
+		}
+		if (input.evalParams!=undefined && input.evalParams.timeframe!=undefined){
+			body.timeframe = input.evalParams.timeframe;
+		}
+
+		if (keptnVersion.startsWith('0.8')){
+			options.data={
+				evaluation: body
+			}
+		}
+		else{
+			options.data = body;
+		}
+	}
+	else{
+		//This is for the older versions
+		options.url = input.keptnApiEndpoint + getAPIFor('event-post', keptnVersion) + '/event';
+		options.data = {
 			type: 'sh.keptn.event.start-evaluation',
 			source: 'azure-devops-plugin',
 			specversion: '0.2',
@@ -255,10 +289,6 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 				labels: parseLabels()
 			}
 		}
-	};
-	//Starting from Keptn 0.7.3 we can use timeframe
-	if (isKeptnSupportingTimeframe(tl.getVariable('keptnVersion'))){
-		options.data.data.timeframe = input.evalParams!=undefined?input.evalParams.timeframe:'null';
 	}
 
 	console.log('sending startEvaluation event ...');
@@ -341,6 +371,24 @@ async function configurationChanged(input:Params, httpClient:AxiosInstance){
 	console.log('sending configuration-changed event ...');
 	let response = await httpClient(options);
 	return storeKeptnContext(input, response);
+}
+
+function getAPIFor(apiType:string, keptnVersion:string){
+	if (apiType.startsWith('project')){
+		if (keptnVersion.startsWith('0.8')){
+			return "/controlPlane/v1"
+		}
+		else if (apiType == 'project-get'){
+			return '/configuration-service/v1';
+		}
+		else if (apiType == 'project-post'){
+			return '/v1';
+		}
+	}
+	else if (apiType.startsWith('event')){
+		return '/v1';
+	}
+	return "/unknown-api"
 }
 
 /**
