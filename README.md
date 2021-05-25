@@ -104,8 +104,10 @@ Updated README.md
 Bugfix packages Add Keptn Resource task 
 * **1.3.0**
 Added support for Keptn 0.8.x - quality gates 
+* **1.3.1**
+Modified icons for a nicer integration on the Dynatrace Hub
 
-Created by `Bert Van der Heyden, RealDolmen - an Inetum company`.
+Created by `Bert Van der Heyden, Inetum-RealDolmen`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration
 > Want to know more about our offering regarding [Dynatrace][dynatrace_link] and [Keptn][keptn_link]? Please contact us: https://www.realdolmen.com/en/solution/digital-performance-management
 > Looking for official support for this plugin? See: https://www.realdolmen.com/en/solution/cicd-pipeline-quality-gates
