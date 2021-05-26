@@ -1,10 +1,10 @@
 {
   "manifestVersion": 1,
-  "id": "keptn-integration-dev",
-  "version": "1.3.0",
-  "name": "DEV Keptn Integration 1.3.0",
+  "id": "keptn-integration",
+  "version": "1.3.1",
+  "name": "Keptn Integration",
   "description": "Integration of Keptn within your build or release pipeline.",
-  "publisher": "bertvanderheyden",
+  "publisher": "RealdolmenDevOps",
   "targets": [{
     "id": "Microsoft.VisualStudio.Services"
   }],
