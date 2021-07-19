@@ -263,14 +263,7 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 			body.timeframe = input.evalParams.timeframe;
 		}
 
-		if (keptnVersion.startsWith('0.8')){
-			options.data={
-				evaluation: body
-			}
-		}
-		else{
-			options.data = body;
-		}
+		options.data = body;
 	}
 	else{
 		//This is for the older versions
@@ -292,6 +285,7 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 	}
 
 	console.log('sending startEvaluation event ...');
+	console.log(options.data);
 	let response = await httpClient(options);
 	return storeKeptnContext(input, response);
 }

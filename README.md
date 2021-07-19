@@ -106,6 +106,8 @@ Bugfix packages Add Keptn Resource task
 Added support for Keptn 0.8.x - quality gates 
 * **1.3.1**
 Modified icons for a nicer integration on the Dynatrace Hub
+* **1.3.3**
+Bugfix in startEvaluation. Endpoint does not require evaluation in body.
 
 Created by `Bert Van der Heyden, Inetum-RealDolmen`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration
