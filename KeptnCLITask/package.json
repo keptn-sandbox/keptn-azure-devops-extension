@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "axios": "^0.19.2",
+    "azure-pipelines-task-lib": "^2.9.3",
+    "moment-timezone": "^0.5.28"
+  }
+}

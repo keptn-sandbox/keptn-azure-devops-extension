@@ -12,8 +12,8 @@
   ],
   "demands": [],
   "version": {
-    "Major": 2,
-    "Minor": 8,
+    "Major": 3,
+    "Minor": 0,
     "Patch": 0
   },
   "groups": [
@@ -70,13 +70,25 @@
       "label": "Type of event",
       "defaultValue": "startEvaluation",
       "options": {
-        "configurationChanged": "configuration-changed",
-        "deploymentFinished": "deployment-finished",
-        "startEvaluation": "start-evaluation"
+        "configurationChanged": "configuration-changed (deprecated)",
+        "deploymentFinished": "deployment-finished (deprecated)",
+        "startEvaluation": "evaluation",
+        "delivery": "delivery",
+        "generic" : "generic"
       },
       "required": true,
       "helpMarkDown": "The type of event send to Keptn",
       "groupName": "keptn-event"
+    },
+    {
+      "name": "sequence",
+      "type": "string",
+      "label": "Sequence",
+      "defaultValue": "delivery",
+      "required": false,
+      "helpMarkDown": "The name of the sequence to trigger",
+      "groupName": "keptn-event",
+      "visibleRule": "eventType = delivery || eventType = generic"
     },
     {
       "name": "start",
@@ -112,10 +124,19 @@
       "name": "deploymentURI",
       "type": "string",
       "label": "Deployment URI",
-      "required": true,
+      "required": false,
       "helpMarkDown": "The public deploymentURI which will be used to execute the tests against",
       "groupName": "keptn-event",
-      "visibleRule": "eventType = deploymentFinished"
+      "visibleRule": "eventType = deploymentFinished || eventType = delivery"
+    },
+    {
+      "name": "deploymentStrategy",
+      "type": "string",
+      "label": "Deployment Strategy",
+      "required": false,
+      "helpMarkDown": "The deployment stategy",
+      "groupName": "keptn-event",
+      "visibleRule": "eventType = delivery"
     },
     {
       "name": "testStrategy",
@@ -127,13 +148,31 @@
       "visibleRule": "eventType = deploymentFinished"
     },
     {
+      "name": "tag",
+      "type": "string",
+      "label": "Tag",
+      "required": true,
+      "helpMarkDown": "The tag of the deployment",
+      "groupName": "keptn-event",
+      "visibleRule": "eventType = deploymentFinished"
+    },
+    {
       "name": "image",
       "type": "string",
       "label": "Image",
-      "required": true,
+      "required": false,
       "helpMarkDown": "The image which is deployed",
       "groupName": "keptn-event",
-      "visibleRule": "eventType = deploymentFinished || eventType = configurationChanged"
+      "visibleRule": "eventType = deploymentFinished || eventType = configurationChanged || eventType = delivery"
+    },
+    {
+      "name": "body",
+      "type": "multiLine",
+      "label": "Body",
+      "required": false,
+      "helpMarkDown": "Place the entire body of the event you want to send in JSON notation",
+      "groupName": "keptn-event",
+      "visibleRule": "eventType = generic"
     },
     {
       "name": "labels",
@@ -142,15 +181,6 @@
       "required": false,
       "helpMarkDown": "You can add a list of key-value pairs (example 'key:value' use semicolon) separated by a new line. You are able to extend or overwrite the default labels this way.\nDefault labels are:\n- buildId: $(Build.BuildNumber)\n- definition: $(Release.DefinitionName)\n- runby: $(Build.QueuedBy)\n- environment : $(Environment.Name)\n- pipeline : $(Release.ReleaseWebURL)",
       "groupName": "keptn-event"
-    },
-    {
-      "name": "tag",
-      "type": "string",
-      "label": "Tag",
-      "required": true,
-      "helpMarkDown": "The tag of the deployment",
-      "groupName": "keptn-event",
-      "visibleRule": "eventType = deploymentFinished"
     },
     {
       "name": "keptnContextVar",

@@ -26,29 +26,42 @@ This task is optional, but very usefull since it prepares a project, stage and s
 When you flag the Create/Initalize flag, you will see following in the keptn bridge if the project did not yet exist.
 ![Prepare Keptn environment result](screenshots/task-prepkeptnenv-result.png)
 
-It's not in the screenshot, but there is also a section where you could configure monitoring via [Dynatrace][dynatrace_link] or [Prometheus][prometheus_link] and upload an sli and slo file. See https://keptn.sh/docs/0.7.x/quality_gates/ for more details on Service Level Indicators and Service Level Objectives.
+It's not in the screenshot, but there is also a section where you could configure monitoring via [Dynatrace][dynatrace_link] or [Prometheus][prometheus_link] and upload an sli and slo file. See https://keptn.sh/docs/0.8.x/quality_gates/ for more details on Service Level Indicators and Service Level Objectives.
+
+Note that this task generates a simple shipyard file which is enough for the quality-gate only use-case. You can always adapt this shipyard later on via the Keptn CLI.
 
 ## Send Keptn event
 The main task in this extension.
-- By sending the `configuration-changed` cloud-event to [Keptn][keptn_link], you can trigger [Keptn][keptn_link] to perform a deployment of an image.
-- By sending the `deployment-finished` cloud-event to [Keptn][keptn_link], you can trigger your load / performance tests to be executed.
-- By sending the `start-evaluation` cloud-event to [Keptn][keptn_link], you can trigger Lighthouse to perform automatic validation of your performance tests.
+- By sending the `configuration-changed` cloud-event to [Keptn][keptn_link], you can trigger [Keptn][keptn_link] to perform a deployment of an image. Note this event is deprecated, see 'delivery' event.
+- By sending the `deployment-finished` cloud-event to [Keptn][keptn_link], you can trigger your load / performance tests to be executed. Note this event is deprecated, see 'delivery' event.
+- By sending the `evaluation` triggered event to [Keptn][keptn_link], you can trigger Lighthouse to perform automatic validation of your performance tests.
+- By sending the `delivery` triggered event to [Keptn][keptn_link], you can trigger a deployment and whatever you configured in keptn for the delivery sequence.
+- You can also use the `generic` event send out any event you want. Just specify the entire body. You can use the azure-devops placeholders off course. Note that the entire body needs to be provided, including type and specversion. See [https://github.com/keptn-sandbox/keptn-azure-devops-extension/issues/34]
 
-configuration-changed requires some extra parameters:
+configuration-changed (deprecated) requires some extra parameters:
 - `image`: the container image to be deployed
 
-deployment-finished requires some extra parameters:
+deployment-finished (deprecated) requires some extra parameters:
 - `deploymentURI`: The public deploymentURI which will be used to execute the tests against
 - `testStrategy`: The testing stategy which is used to perform the tests
 - `image`: the container image to be deployed
 - `tag`: The tag of the deployment
 
-start-evaluation requires some extra parameters:
+evaluation requires some extra parameters:
 - `startTime`: format needs to be "yyyy-MM-ddTHH:mm:sszzz"
 - `endTime`: format needs to be "yyyy-MM-ddTHH:mm:sszzz"
 - `timeframe`: If you don't want to use start and end time you could for example provide "15m" as value to evaluate the previous 15 minutes.
 
-All of the types supported here are sending labels to Keptn as well to provide extra context. The default labels are:
+delivery asks for some extra parameters:
+- `sequence`: the sequence which is delivery by default
+- `deploymentURI`: The local deploymentURI which will be used to execute the tests against
+- `deploymentStrategy`: The deployment stategy
+- `image`: the container image to be deployed
+
+generic only asks for a:
+- `body`: The entire JSON body of the event. Very flexible, all in your own hands.
+
+All of the types above, except generic sinds you control it all, are sending labels to Keptn as well to provide extra context. The default labels are:
 - buildId: $(Build.BuildNumber)
 - definition: $(Release.DefinitionName)
 - runby: $(Build.QueuedBy)
@@ -108,6 +121,8 @@ Added support for Keptn 0.8.x - quality gates
 Modified icons for a nicer integration on the Dynatrace Hub
 * **1.3.3**
 Bugfix in startEvaluation. Endpoint does not require evaluation in body.
+* **1.3.5**
+Fix issue 34 by implementing delivery and generic triggered events.
 
 Created by `Bert Van der Heyden, Inetum-RealDolmen`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration

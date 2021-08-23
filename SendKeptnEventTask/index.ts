@@ -9,6 +9,17 @@ class EvalParams {
 	timeframe: string | undefined;
 }
 
+class DeliveryParams {
+	image: string | undefined;
+	sequence: string = "delivery"; //Smart Default
+	deploymentURI: string | undefined;
+	deploymentStrategy: string | undefined;
+}
+
+class GenericParams {
+	body: string | undefined;
+}
+
 class DeploymentFinishedParams {
 	deploymentURI: string = '';
 	testStrategy: string = '';
@@ -28,7 +39,9 @@ class Params {
 	keptnApiEndpoint: string = '';
 	keptnApiToken: string = '';
 	keptnContextVar: string = '';
-	evalParams: EvalParams | undefined;
+	evaluationParams: EvalParams | undefined;
+	deliveryParams: DeliveryParams | undefined;
+	genericParams: GenericParams | undefined;
 	deployFinishedParams: DeploymentFinishedParams | undefined;
 	configChangedParams: ConfigurationChangedParams | undefined;
 }
@@ -112,10 +125,45 @@ function prepare():Params | undefined {
 			if (pe.start == undefined && pe.end == undefined && pe.timeframe == undefined){
 				pe.timeframe = '30m';
 			}
-			p.evalParams = pe;
+			p.evaluationParams = pe;
 			console.log('using start', start);
 			console.log('using end', end);
 			console.log('using timeframe', timeframe);
+		}
+		else if (p.eventType == 'delivery'){
+			let dc = new DeliveryParams();
+			const sequence: string | undefined = tl.getInput('sequence');
+			if (sequence != undefined){
+				dc.sequence = sequence;
+			}
+			const image: string | undefined = tl.getInput('image');
+			if (image != undefined){
+				dc.image = image;
+			}
+			const deploymentURI: string | undefined = tl.getInput('deploymentURI');
+			if (deploymentURI != undefined){
+				dc.deploymentURI = deploymentURI;
+			}
+			const deploymentStrategy: string | undefined = tl.getInput('deploymentStrategy');
+			if (deploymentStrategy != undefined){
+				dc.deploymentStrategy = deploymentStrategy;
+			}
+			
+			p.deliveryParams = dc;
+			console.log('using sequence', sequence);
+			console.log('using image', image);
+			console.log('using deploymentURI', deploymentURI);
+			console.log('using deploymentStrategy', deploymentStrategy);
+		}
+		else if (p.eventType == 'generic'){
+			let gc = new GenericParams();
+			const body: string | undefined = tl.getInput('body');
+			if (body != undefined){
+				gc.body = body;
+			}
+			
+			p.genericParams = gc;
+			console.log('using body', body);
 		}
 		else if (p.eventType == 'deploymentFinished'){
 			let pd = new DeploymentFinishedParams();
@@ -209,8 +257,16 @@ async function run(input:Params){
 				rejectUnauthorized: false
 			})
 		});
-		if (input.eventType == 'startEvaluation' && input.evalParams != undefined){
-			let keptnContext = await startEvaluation(input, axiosInstance);
+		if (input.eventType == 'startEvaluation' && input.evaluationParams != undefined){
+			let keptnContext = await triggerEvaluation(input, axiosInstance);
+			return keptnContext;
+		}
+		else if (input.eventType == 'delivery' && input.deliveryParams != undefined){
+			let keptnContext = await triggerDelivery(input, axiosInstance);
+			return keptnContext;
+		}
+		else if (input.eventType == 'generic' && input.genericParams != undefined){
+			let keptnContext = await triggerGeneric(input, axiosInstance);
 			return keptnContext;
 		}
 		else if (input.eventType == 'configurationChanged'){
@@ -227,7 +283,6 @@ async function run(input:Params){
 	}catch(err){
 		throw err;
 	}
-	return "task finished";
 }
 
 /**
@@ -236,7 +291,7 @@ async function run(input:Params){
  * @param input Parameters
  * @param httpClient an instance of axios
  */
-async function startEvaluation(input:Params, httpClient:AxiosInstance){
+async function triggerEvaluation(input:Params, httpClient:AxiosInstance){
 	let keptnVersion = tl.getVariable('keptnVersion');
 	if (keptnVersion==null){
 		keptnVersion = '0.8.1'; //smart default
@@ -253,14 +308,14 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 		let body:any = {
 			labels: parseLabels()
 		};
-		if (input.evalParams!=undefined && input.evalParams.start!=undefined){
-			body.start = input.evalParams.start;
+		if (input.evaluationParams!=undefined && input.evaluationParams.start!=undefined){
+			body.start = input.evaluationParams.start;
 		}
-		if (input.evalParams!=undefined && input.evalParams.end!=undefined){
-			body.end = input.evalParams.end;
+		if (input.evaluationParams!=undefined && input.evaluationParams.end!=undefined){
+			body.end = input.evaluationParams.end;
 		}
-		if (input.evalParams!=undefined && input.evalParams.timeframe!=undefined){
-			body.timeframe = input.evalParams.timeframe;
+		if (input.evaluationParams!=undefined && input.evaluationParams.timeframe!=undefined){
+			body.timeframe = input.evaluationParams.timeframe;
 		}
 
 		options.data = body;
@@ -277,8 +332,8 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 				service: input.service,
 				stage: input.stage,
 				teststrategy: 'performance',
-				start: input.evalParams!=undefined?input.evalParams.start:'null',
-				end: input.evalParams!=undefined?input.evalParams.end:'null',
+				start: input.evaluationParams!=undefined?input.evaluationParams.start:'null',
+				end: input.evaluationParams!=undefined?input.evaluationParams.end:'null',
 				labels: parseLabels()
 			}
 		}
@@ -286,6 +341,84 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
 
 	console.log('sending startEvaluation event ...');
 	console.log(options.data);
+	let response = await httpClient(options);
+	return storeKeptnContext(input, response);
+}
+
+/**
+ * Send the delivery triggered event based on the input parameters
+ * 
+ * @param input Parameters
+ * @param httpClient an instance of axios
+ */
+async function triggerDelivery(input:Params, httpClient:AxiosInstance){
+	let options:any = {
+		method: <Method>"POST",
+		url: input.keptnApiEndpoint + '/v1/event',
+		headers: {'x-token': input.keptnApiToken},
+		data: {
+			type: 'sh.keptn.events.' + input.stage + '.' + input.deliveryParams?.sequence + '.triggered',
+			source: 'azure-devops-plugin',
+			specversion: '1.0',
+			data: {
+				project: input.project,
+				service: input.service,
+				stage: input.stage,
+				configurationChange: null,
+				deployment: {
+					deploymentURIsLocal: null,
+      				deploymentstrategy: ""
+				},
+				labels: parseLabels()
+			}
+		}
+	};
+
+	if (input.deliveryParams!=undefined){
+		let dp:DeliveryParams = input.deliveryParams;
+		if (dp.image != undefined){
+			let cc = {
+				values: {
+					image: dp.image
+				}
+			}
+			options.data.data.configurationChange = cc;
+		}
+		if (dp.deploymentURI != undefined){
+			options.data.data.deployment.deploymentURIsLocal = dp.deploymentURI
+		}
+		if (dp.deploymentStrategy != undefined){
+			options.data.data.deployment.deploymentStrategy = dp.deploymentStrategy
+		}
+	}
+	
+	console.log('sending delivery triggered event ...');
+	let response = await httpClient(options);
+	return storeKeptnContext(input, response);
+}
+
+/**
+ * Send a generic triggered event based on the input parameters
+ * 
+ * @param input Parameters
+ * @param httpClient an instance of axios
+ */
+async function triggerGeneric(input:Params, httpClient:AxiosInstance){
+	let options:any = {
+		method: <Method>"POST",
+		url: input.keptnApiEndpoint + '/v1/event',
+		headers: {'x-token': input.keptnApiToken},
+		data: {
+			type: 'sh.keptn.events.' + input.stage + '.' + (input.deliveryParams!=undefined?input.deliveryParams.sequence:'delivery') + '.triggered',
+			source: 'azure-devops-plugin',
+			specversion: '1.0'
+		}
+	};
+	if (input.genericParams != undefined && input.genericParams.body != undefined){
+		options.data.data = JSON.parse(input.genericParams.body);
+	}
+
+	console.log('sending generic event ...');
 	let response = await httpClient(options);
 	return storeKeptnContext(input, response);
 }
@@ -300,6 +433,7 @@ async function startEvaluation(input:Params, httpClient:AxiosInstance){
  * 
  * @param input Parameters
  * @param httpClient an instance of axios
+ * @deprecated
  */
 async function deploymentFinished(input:Params, httpClient:AxiosInstance){
 	let options = {
@@ -336,6 +470,7 @@ async function deploymentFinished(input:Params, httpClient:AxiosInstance){
  * 
  * @param input Parameters
  * @param httpClient an instance of axios
+ * @deprecated
  */
 async function configurationChanged(input:Params, httpClient:AxiosInstance){
 	let options = {
