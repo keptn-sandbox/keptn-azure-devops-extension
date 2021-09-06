@@ -12,7 +12,7 @@ describe('Wait for Keptn Event task tests', function () {
 
     });
 
-	it('must wait for evaluationDone', function(done: MochaDone) {
+	it('must wait for evaluationFinished', function(done: MochaDone) {
 		this.timeout(125000);
 
 		let tp = path.join(__dirname, 'waitfor.js');

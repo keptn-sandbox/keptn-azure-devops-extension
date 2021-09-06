@@ -4,6 +4,7 @@ import https = require('https');
 
 class Params {
 	waitForEventType: string = '';
+	sequence: string = 'evaluation';
 	timeout: number = 3;
 	keptnContextVar: string = '';
 	keptnApiEndpoint: string = '';
@@ -32,7 +33,6 @@ const completeTaskMap:{[index:string]:tl.TaskResult} = {
 function prepare():Params | undefined {
 	
 	try {
-	    const waitForEventType: string | undefined = tl.getInput('waitForEventType');
 		const project: string | undefined = tl.getInput('project');
 		const service: string | undefined = tl.getInput('service');
 		const stage: string | undefined = tl.getInput('stage');
@@ -42,11 +42,23 @@ function prepare():Params | undefined {
 		let p = new Params();
 		let badInput:string[]=[];
 
+		const waitForEventType: string | undefined = tl.getInput('waitForEventType');
 		if (waitForEventType !== undefined) {
 			p.waitForEventType = waitForEventType;
 		}
 		else{
             badInput.push('waitForEventType');
+		}
+
+		const sequence: string | undefined = tl.getInput('sequence');
+		if (sequence == undefined && (p.waitForEventType == 'evaluation' || p.waitForEventType == 'delivery')){
+			p.sequence = p.waitForEventType;
+		}
+		else if (sequence == undefined && p.waitForEventType == 'generic' ){
+			badInput.push('sequence');
+		}
+		else if (sequence !== undefined){
+			p.sequence = sequence;
 		}
 		
 		let timeoutStr: string | undefined = tl.getInput('timeout');
@@ -125,74 +137,120 @@ async function run(input:Params){
 				rejectUnauthorized: false
 			})
 		});
-		if (input.waitForEventType == 'evaluationDone'){
-			let keptnVersion = tl.getVariable('keptnVersion');
-			if (keptnVersion==null){
-				keptnVersion = '0.8.1'; //smart default
-			}
-			if (keptnVersion.startsWith('0.8')){
-				return waitForEvaluationDone(input, axiosInstance);
-			} 
-			else{
+
+		let keptnVersion = await fetchKeptnVersion(input, axiosInstance);
+		tl.setVariable('keptnVersion', keptnVersion);
+
+		// for backwards compatibility. Remove when keptn 1.0 is released
+		if (input.waitForEventType == 'evaluation' && 
+			(keptnVersion.startsWith('0.7') || keptnVersion.startsWith('0.6'))){
 				return waitForEvaluationDonePre08(input, axiosInstance);
-			}
 		}
 		else{
-			throw new Error('Unsupported eventType');
+			let keptnContext = tl.getVariable(input.keptnContextVar);
+			console.log('using keptnContext = ' + keptnContext);
+			let eventType = `sh.keptn.event.${input.sequence}.finished`;
+
+			// in case of generic or delivery
+			let cb = function(event:any){
+				return event.type
+			};
+			// in case of evaluation
+			if (input.waitForEventType == 'evaluation'){
+				cb = function(event:any){
+					let evaluationScore = event.data.evaluation.score;
+					let evaluationResult = event.data.evaluation.result;
+					handleEvaluationResult(evaluationResult, evaluationScore, keptnContext, input);
+					return evaluationResult;
+				}
+			}
+			if (keptnContext){
+				return waitFor(eventType, keptnContext, input, axiosInstance, cb);
+			}
+			else {
+				throw new ReferenceError ("keptnContext not found");
+			}
 		}
 	}catch(err){
 		throw err;
 	}
-	return "task finished";
 }
 
 /**
- * Request the evaluation-done event based on the startEvaluationKeptnContext task variable.
- * Try a couple of times since it can take a few seconds for keptn to evaluate.
+ * Get the Keptn Version via the API. Used for backwards compatibility reasons
  * 
+ * @param input 
+ * @param httpClient 
+ */
+async function fetchKeptnVersion(input:Params, httpClient:AxiosInstance){
+	let keptnVersion;
+	//Check which version of Keptn we have here
+	
+	let options = {
+		method: <Method>"GET",
+		url: input.keptnApiEndpoint + '/v1/metadata',
+		headers: {'x-token': input.keptnApiToken},
+		validateStatus: (status:any) => status === 200 || status === 404
+	};
+
+	let response = await httpClient(options);
+	if (response.status === 200){
+		console.log('metadata endpoint exists...');
+		keptnVersion = response.data.keptnversion;
+	}
+	else if (response.status === 404){
+		keptnVersion = '0.6'
+	}
+	console.log('keptnVersion = ' + keptnVersion);
+	return keptnVersion;
+}
+
+/**
+ * Request the 'sequence'.finished event based on the KeptnContext task variable.
+ * Try a couple of times since it can take a few seconds for keptn to do it's thing.
+ * The timeout is also a variable
+ * Handling of the response is done via the callback function since it depends on the type.
+ * 
+ * @param eventType which is the full type String passed to the API
+ * @param keptnContext identifier
  * @param input Parameters
  * @param httpClient an instance of axios
+ * @param callback function to do something with the returned event data
  */
-async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
-	let keptnContext = tl.getVariable(input.keptnContextVar);
-	console.log('using keptnContext = ' + keptnContext);
-	let evaluationScore = -1;
-	let evaluationResult = "empty";
+async function waitFor(eventType:string, keptnContext:string, input:Params, httpClient:AxiosInstance, callback:Function){
+	let result = "empty";
 
 	let options:any = {
 		method: <Method>"GET",
 		headers: {'x-token': input.keptnApiToken},
-		url: input.keptnApiEndpoint + '/mongodb-datastore/event?type=sh.keptn.event.evaluation.finished&keptnContext=' + keptnContext
+		url: input.keptnApiEndpoint + `/mongodb-datastore/event?type=${eventType}&keptnContext=${keptnContext}`
 	}
 	
 	let c=0;
 	let max = (input.timeout * 60) / 10
-	let out;
 	console.log("waiting in steps of 10 seconds, max " + max + " loops.");
 	do{
 		await delay(10000); //wait 10 seconds
 		var response = await httpClient(options);
 		if (response.data.events != undefined && response.data.totalCount == 1){
-			out = response.data.events[0];
-			evaluationScore = out.data.evaluation.score;
-			evaluationResult = out.data.evaluation.result;
+			result = callback(response.data.events[0], keptnContext, input);
+			let keptnEventData = JSON.stringify(response.data.events[0], null, 2);
+			console.log("************* Result from Keptn ****************");
+			console.log(keptnEventData);
+			tl.setVariable("keptnEventData", keptnEventData);
 		}
 		else {
 			if (++c > max){
-				evaluationResult = "not-found"
+				result = `No Keptn ${eventType} event found for context`;
+				tl.setResult(tl.TaskResult.Failed, result);
+				return result;
 			}
 			else {
 				console.log("wait another 10 seconds");
 			}
 		}
-	}while (evaluationResult == "empty");
-
-	handleEvaluationResult(evaluationResult, evaluationScore, keptnContext, input);
-
-	console.log("************* Result from Keptn ****************");
-	console.log(JSON.stringify(out, null, 2));
-
-	return evaluationResult;
+	}while (result == "empty");
+	return result;
 }
 
 /**

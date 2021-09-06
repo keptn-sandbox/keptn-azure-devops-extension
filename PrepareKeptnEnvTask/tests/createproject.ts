@@ -5,7 +5,7 @@ import fs from 'fs';
 
 let taskPath = path.join(__dirname, '..', 'index.js');
 let tmr: tmrm.TaskMockRunner = new tmrm.TaskMockRunner(taskPath);
-tmr.setInput('project', 'new-test-project');
+tmr.setInput('project', 'new-test-project2');
 tmr.setInput('service', 'test-service');
 tmr.setInput('stage', 'hardening');
 tmr.setInput('keptnApiEndpoint', '1234567');

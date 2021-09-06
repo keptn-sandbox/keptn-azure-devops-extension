@@ -28,7 +28,11 @@ When you flag the Create/Initalize flag, you will see following in the keptn bri
 
 It's not in the screenshot, but there is also a section where you could configure monitoring via [Dynatrace][dynatrace_link] or [Prometheus][prometheus_link] and upload an sli and slo file. See https://keptn.sh/docs/0.8.x/quality_gates/ for more details on Service Level Indicators and Service Level Objectives.
 
-Note that this task generates a simple shipyard file which is enough for the quality-gate only use-case. You can always adapt this shipyard later on via the Keptn CLI.
+This task also has options for the shipyard file required by the project. There are 3 types:
+- `generated`: Which generates a simple shipyard which is enough for the quality-gate only use-case. You can always adapt this shipyard later on via the [Keptn][keptn_link] CLI.
+- `inline`: A multiline textarea will appear allowing you to describe the yaml structure. Note that you could use placeholders for stage and whatever variables you want. This is default Azure Devops functionality.
+- `file`: You then provide the path to the shipyard file which is available for the pipeline.
+> **Note:** that the shipyard is only used once when creating the project. Any updates later on can be done via the [Keptn][keptn_link] CLI or any other means that [Keptn][keptn_link] provides.
 
 ## Send Keptn event
 The main task in this extension.
@@ -38,27 +42,27 @@ The main task in this extension.
 - By sending the `delivery` triggered event to [Keptn][keptn_link], you can trigger a deployment and whatever you configured in keptn for the delivery sequence.
 - You can also use the `generic` event send out any event you want. Just specify the entire body. You can use the azure-devops placeholders off course. Note that the entire body needs to be provided, including type and specversion. See [https://github.com/keptn-sandbox/keptn-azure-devops-extension/issues/34]
 
-configuration-changed (deprecated) requires some extra parameters:
+**configuration-changed** (deprecated) requires some extra parameters:
 - `image`: the container image to be deployed
 
-deployment-finished (deprecated) requires some extra parameters:
+**deployment-finished** (deprecated) requires some extra parameters:
 - `deploymentURI`: The public deploymentURI which will be used to execute the tests against
 - `testStrategy`: The testing stategy which is used to perform the tests
 - `image`: the container image to be deployed
 - `tag`: The tag of the deployment
 
-evaluation requires some extra parameters:
+**evaluation** requires some extra parameters:
 - `startTime`: format needs to be "yyyy-MM-ddTHH:mm:sszzz"
 - `endTime`: format needs to be "yyyy-MM-ddTHH:mm:sszzz"
 - `timeframe`: If you don't want to use start and end time you could for example provide "15m" as value to evaluate the previous 15 minutes.
 
-delivery asks for some extra parameters:
+**delivery** asks for some extra parameters:
 - `sequence`: the sequence which is delivery by default
 - `deploymentURI`: The local deploymentURI which will be used to execute the tests against
 - `deploymentStrategy`: The deployment stategy
 - `image`: the container image to be deployed
 
-generic only asks for a:
+**generic** only asks for a:
 - `body`: The entire JSON body of the event. Very flexible, all in your own hands.
 
 All of the types above, except generic sinds you control it all, are sending labels to Keptn as well to provide extra context. The default labels are:
@@ -76,14 +80,16 @@ There is an optional text-area field called Labels where you can add a list of k
 ![Send Keptn event result](screenshots/task-sendkeptnevent-result1.png)
 
 ## Wait for Keptn event
-This task listens for some time for a specific [Keptn][keptn_link] event. Currently only evaluation-done is supported. It waits for a configurable amount of minutes.
+This task listens for some time for a specific [Keptn][keptn_link] event. It supports evaluation, delivery as wel as a generic event and you can provide your own sequence name. It waits for a configurable amount of minutes.
 Prerequisite of this task is the Send [Keptn][keptn_link] Event task which puts the keptnContext as a variable on the pipeline. This task uses this variable to capture the result.
 
 ![Wait for Keptn event config](screenshots/task-waitforkeptnevent.png)
 
-You can configure what should happen with the pipeline on a warning or fail from keptn. In this case it will give a warning whenever the lighthouse service did not indicate a 'pass'. So both warning as fail in [Keptn][keptn_link] will result in a 'succeeded with issues' here.
+For evaluation you can configure what should happen with the pipeline on a warning or fail from keptn. In this case it will give a warning whenever the lighthouse service did not indicate a 'pass'. So both warning as fail in [Keptn][keptn_link] will result in a 'succeeded with issues' here.
 
 ![Wait for Keptn event result](screenshots/task-waitforkeptnevent-result.png)
+
+The JSON string of the resulting event is published as variable "keptnEventData" so you can use it in whatever tasks you want later in the pipeline.
 
 ## Add Keptn resource
 Although you can add the SLI, SLO and Dynatrace config files via the **Prepare Keptn Environment** task, there might be cases where you need to push additional files to Keptn. I am thinking about JMeter scripts for example or other config that can be used by Keptn services. That's when you could use this additional task.
@@ -123,6 +129,8 @@ Modified icons for a nicer integration on the Dynatrace Hub
 Bugfix in startEvaluation. Endpoint does not require evaluation in body.
 * **1.3.5**
 Fix issue 34 by implementing delivery and generic triggered events.
+* **1.3.6**
+Improvement issue 35 by implementing wait for evaluation, delivery and generic triggered events.
 
 Created by `Bert Van der Heyden, Inetum-RealDolmen`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration

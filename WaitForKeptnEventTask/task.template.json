@@ -12,8 +12,8 @@
   ],
   "demands": [],
   "version": {
-    "Major": 1,
-    "Minor": 9,
+    "Major": 2,
+    "Minor": 0,
     "Patch": 0
   },
   "groups": [
@@ -43,13 +43,23 @@
     {
       "name": "waitForEventType",
       "type": "pickList",
-      "label": "Wait for event",
-      "defaultValue": "evaluationDone",
+      "label": "Wait for sequence finished",
+      "defaultValue": "evaluation",
       "options": {
-        "evaluationDone": "evaluation-done"
+        "evaluation": "evaluation",
+        "delivery": "delivery",
+        "generic" : "generic"
       },
       "required": true,
-      "helpMarkDown": "The type of event to wait for",
+      "helpMarkDown": "The type of sequence to wait for",
+      "groupName": "keptn-event"
+    },
+    {
+      "name": "sequence",
+      "type": "string",
+      "label": "Sequence (when not evaluation or delivery)",
+      "required": false,
+      "helpMarkDown": "The name of the sequence to wait for finished",
       "groupName": "keptn-event"
     },
     {
@@ -82,7 +92,8 @@
       },
       "required": false,
       "helpMarkDown": "What should happen when error state is returned by Keptn?",
-      "groupName": "keptn-event"
+      "groupName": "keptn-event",
+      "visibleRule": "waitForEventType = evaluation"
     },
     {
       "name": "markBuildOnWarning",
@@ -96,7 +107,8 @@
       },
       "required": false,
       "helpMarkDown": "What should happen when warning state is returned by Keptn?",
-      "groupName": "keptn-event"
+      "groupName": "keptn-event",
+      "visibleRule": "waitForEventType = evaluation"
     }
   ],
   "minimumAgentVersion": "1.83.0",

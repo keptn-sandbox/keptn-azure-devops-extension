@@ -122,27 +122,8 @@ async function run(input:Params){
 			})
 		});
 
-		let keptnVersion;
-		//Check which version of Keptn we have here
-		{
-			let options = {
-				method: <Method>"GET",
-				url: input.keptnApiEndpoint + '/v1/metadata',
-				headers: {'x-token': input.keptnApiToken},
-				validateStatus: (status:any) => status === 200 || status === 404
-			};
-		
-			let response = await httpClient(options);
-			if (response.status === 200){
-				console.log('metadata endpoint exists...');
-				keptnVersion = response.data.keptnversion;
-			}
-			else if (response.status === 404){
-				keptnVersion = '0.6'
-			}
-			console.log('keptnVersion = ' + keptnVersion);
-			tl.setVariable('keptnVersion', keptnVersion);
-		}
+		let keptnVersion = await fetchKeptnVersion(input, httpClient);
+		tl.setVariable('keptnVersion', keptnVersion);
 
 		{ //scope verify and create project if needed
 			if (!await entityExists('project', input, httpClient, keptnVersion)){
@@ -244,6 +225,35 @@ async function run(input:Params){
 }
 
 /**
+ * Get the Keptn Version via the API. Used for backwards compatibility reasons
+ * 
+ * @param input 
+ * @param httpClient 
+ */
+async function fetchKeptnVersion(input:Params, httpClient:AxiosInstance){
+	let keptnVersion;
+	//Check which version of Keptn we have here
+	
+	let options = {
+		method: <Method>"GET",
+		url: input.keptnApiEndpoint + '/v1/metadata',
+		headers: {'x-token': input.keptnApiToken},
+		validateStatus: (status:any) => status === 200 || status === 404
+	};
+
+	let response = await httpClient(options);
+	if (response.status === 200){
+		console.log('metadata endpoint exists...');
+		keptnVersion = response.data.keptnversion;
+	}
+	else if (response.status === 404){
+		keptnVersion = '0.6'
+	}
+	console.log('keptnVersion = ' + keptnVersion);
+	return keptnVersion;
+}
+
+/**
  * 
  * @param entityType 
  * @param input 
@@ -306,8 +316,49 @@ function getAPIFor(apiType:string, keptnVersion:string){
 	return "/unknown-api"
 }
 
+/**
+ * Generate / fetch the shipyard yaml base64 based on the input
+ * 
+ * @param keptnVersion 
+ * @param stage 
+ */
 function getShipyardFor(keptnVersion:string, stage:string){
-	if (keptnVersion.startsWith('0.8')){
+	let shipyardKind: string | undefined =  tl.getInput('shipyardKind');
+	if (shipyardKind == undefined) shipyardKind = 'generated';
+	if (shipyardKind == 'generated'){
+		return getGeneratedShipyardFor(keptnVersion, stage);
+	}
+	else if (shipyardKind == 'inline'){
+		let inlineContent:string|undefined = tl.getInput('shipyardInline');
+		if (inlineContent){
+			return Buffer.from(inlineContent).toString('base64');
+		}
+		else {
+			throw ReferenceError("shipyardInline must be provided!");
+		}
+	}
+	else if (shipyardKind == 'file'){
+		let shipyardFilePath = filePathInput('shipyardFile');
+		if (shipyardFilePath){
+			console.log(`using shipyard ${shipyardFilePath}`);
+			let resourceContent = fs.readFileSync(shipyardFilePath,'utf8');
+			return Buffer.from(resourceContent).toString('base64');
+		}
+		else {
+			throw ReferenceError("shipyardFile must be provided and valid");
+		}
+	}
+	throw new TypeError("shipyardKind must be a valid and supported type");
+}
+
+/**
+ * Return a default generated simple shipyard with only one stage
+ * 
+ * @param keptnVersion 
+ * @param stage 
+ */
+function getGeneratedShipyardFor(keptnVersion:string, stage:string){
+	if (!keptnVersion.startsWith('0.7') && !keptnVersion.startsWith('0.6')){
 		return Buffer.from(
 			"apiVersion: \"spec.keptn.sh/0.2.0\"\n"+
 			"kind: \"Shipyard\"\n"+

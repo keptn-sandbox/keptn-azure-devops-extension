@@ -257,6 +257,10 @@ async function run(input:Params){
 				rejectUnauthorized: false
 			})
 		});
+		
+		let keptnVersion = await fetchKeptnVersion(input, axiosInstance);
+		tl.setVariable('keptnVersion', keptnVersion);
+
 		if (input.eventType == 'startEvaluation' && input.evaluationParams != undefined){
 			let keptnContext = await triggerEvaluation(input, axiosInstance);
 			return keptnContext;
@@ -283,6 +287,35 @@ async function run(input:Params){
 	}catch(err){
 		throw err;
 	}
+}
+
+/**
+ * Get the Keptn Version via the API. Used for backwards compatibility reasons
+ * 
+ * @param input 
+ * @param httpClient 
+ */
+async function fetchKeptnVersion(input:Params, httpClient:AxiosInstance){
+	let keptnVersion;
+	//Check which version of Keptn we have here
+	
+	let options = {
+		method: <Method>"GET",
+		url: input.keptnApiEndpoint + '/v1/metadata',
+		headers: {'x-token': input.keptnApiToken},
+		validateStatus: (status:any) => status === 200 || status === 404
+	};
+
+	let response = await httpClient(options);
+	if (response.status === 200){
+		console.log('metadata endpoint exists...');
+		keptnVersion = response.data.keptnversion;
+	}
+	else if (response.status === 404){
+		keptnVersion = '0.6'
+	}
+	console.log('keptnVersion = ' + keptnVersion);
+	return keptnVersion;
 }
 
 /**
