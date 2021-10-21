@@ -131,6 +131,8 @@ Bugfix in startEvaluation. Endpoint does not require evaluation in body.
 Fix issue 34 by implementing delivery and generic triggered events.
 * **1.3.6**
 Improvement issue 35 by implementing wait for evaluation, delivery and generic triggered events.
+* **1.4.0**
+Support 0.9.x during project initiation. version 2 of prepare task.
 
 Created by `Bert Van der Heyden, Inetum-RealDolmen`.
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration

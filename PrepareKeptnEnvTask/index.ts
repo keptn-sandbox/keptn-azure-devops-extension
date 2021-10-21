@@ -292,23 +292,10 @@ async function entityExists(entityType:string, input:Params, httpClient:AxiosIns
 
 function getAPIFor(apiType:string, keptnVersion:string){
 	if (apiType.startsWith('project-resource')){
-		if (keptnVersion == '0.6'){
-			return '/v1';
-		}
-		else{
-			return '/configuration-service/v1';
-		}
+		return '/configuration-service/v1';
 	}
 	else if (apiType.startsWith('project')){
-		if (keptnVersion.startsWith('0.8')){
-			return "/controlPlane/v1"
-		}
-		else if (apiType == 'project-get'){
-			return '/configuration-service/v1';
-		}
-		else if (apiType == 'project-post'){
-			return '/v1';
-		}
+		return "/controlPlane/v1"
 	}
 	else if (apiType.startsWith('event')){
 		return '/v1';

@@ -537,15 +537,7 @@ async function configurationChanged(input:Params, httpClient:AxiosInstance){
 
 function getAPIFor(apiType:string, keptnVersion:string){
 	if (apiType.startsWith('project')){
-		if (keptnVersion.startsWith('0.8')){
-			return "/controlPlane/v1"
-		}
-		else if (apiType == 'project-get'){
-			return '/configuration-service/v1';
-		}
-		else if (apiType == 'project-post'){
-			return '/v1';
-		}
+		return "/controlPlane/v1"
 	}
 	else if (apiType.startsWith('event')){
 		return '/v1';
@@ -557,13 +549,22 @@ function getAPIFor(apiType:string, keptnVersion:string){
  * Helper function to parse the labels
  */
 function parseLabels():any{
-	let labels:any = {
-		buildId: tl.getVariable("Build.BuildNumber"),
-		definition: tl.getVariable("Release.DefinitionName"),
-		runby: tl.getVariable("Build.QueuedBy"),
-		environment : tl.getVariable("Environment.Name"),
-		pipeline : tl.getVariable("Release.ReleaseWebURL")
-	};
+	let labels:any = {};
+	if (tl.getVariable("Build.BuildNumber") != undefined){
+		labels['buildId'] = tl.getVariable("Build.BuildNumber");
+	}
+	if (tl.getVariable("Release.DefinitionName") != undefined){
+		labels['definition'] = tl.getVariable("Release.DefinitionName");
+	}
+	if (tl.getVariable("Build.QueuedBy") != undefined){
+		labels['runby'] = tl.getVariable("Build.QueuedBy");
+	}
+	if (tl.getVariable("Release.EnvironmentName") != undefined){
+		labels['environment'] = tl.getVariable("Release.EnvironmentName");
+	}
+	if (tl.getVariable("Release.ReleaseWebURL") != undefined){
+		labels['pipeline'] = tl.getVariable("Release.ReleaseWebURL");
+	}
 
 	const labelsConfig: string | undefined = tl.getInput('labels');
 	if (labelsConfig != undefined && labelsConfig.trim().length > 0){
