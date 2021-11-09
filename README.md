@@ -11,6 +11,15 @@ This extension includes 4 tasks which can be used to integrate your pipeline wit
 Watch the following Keptn Community Webinar to see the extension in action:
 [![Automating Quality Gates in Azure DevOps with Keptn](https://img.youtube.com/vi/vgCizWLVsPc/0.jpg)](https://www.youtube.com/watch?v=vgCizWLVsPc "Automating Quality Gates in Azure DevOps with Keptn")
 
+
+
+## Compatibility matrix
+
+You can find out the latest release on the [VisualStudio Marketplace](https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration).
+
+This integration aims to be compatible with Keptn 0.9.x. For more information, please scroll down to [Release notes](#release-notes).
+
+
 ## The service endpoint
 First of all you need to configure the [Keptn][keptn_link] endpoint as a [`service connection`](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml).
 
