@@ -390,7 +390,7 @@ async function triggerDelivery(input:Params, httpClient:AxiosInstance){
 		url: input.keptnApiEndpoint + '/v1/event',
 		headers: {'x-token': input.keptnApiToken},
 		data: {
-			type: 'sh.keptn.events.' + input.stage + '.' + input.deliveryParams?.sequence + '.triggered',
+			type: 'sh.keptn.event.' + input.stage + '.' + input.deliveryParams?.sequence + '.triggered',
 			source: 'azure-devops-plugin',
 			specversion: '1.0',
 			data: {
@@ -442,7 +442,7 @@ async function triggerGeneric(input:Params, httpClient:AxiosInstance){
 		url: input.keptnApiEndpoint + '/v1/event',
 		headers: {'x-token': input.keptnApiToken},
 		data: {
-			type: 'sh.keptn.events.' + input.stage + '.' + (input.deliveryParams!=undefined?input.deliveryParams.sequence:'delivery') + '.triggered',
+			type: 'sh.keptn.event.' + input.stage + '.' + (input.deliveryParams!=undefined?input.deliveryParams.sequence:'delivery') + '.triggered',
 			source: 'azure-devops-plugin',
 			specversion: '1.0'
 		}
