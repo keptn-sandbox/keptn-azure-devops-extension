@@ -12,13 +12,11 @@ Watch the following Keptn Community Webinar to see the extension in action:
 [![Automating Quality Gates in Azure DevOps with Keptn](https://img.youtube.com/vi/vgCizWLVsPc/0.jpg)](https://www.youtube.com/watch?v=vgCizWLVsPc "Automating Quality Gates in Azure DevOps with Keptn")
 
 
-
 ## Compatibility matrix
 
 You can find out the latest release on the [VisualStudio Marketplace](https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration).
 
-This integration aims to be compatible with Keptn 0.9.x. For more information, please scroll down to [Release notes](#release-notes).
-
+This integration aims to be compatible with Keptn 0.9.x and 0.10.0. For more information, please scroll down to [Release notes](#release-notes).
 
 ## The service endpoint
 First of all you need to configure the [Keptn][keptn_link] endpoint as a [`service connection`](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml).
@@ -104,6 +102,10 @@ The JSON string of the resulting event is published as variable "keptnEventData"
 Although you can add the SLI, SLO and Dynatrace config files via the **Prepare Keptn Environment** task, there might be cases where you need to push additional files to Keptn. I am thinking about JMeter scripts for example or other config that can be used by Keptn services. That's when you could use this additional task.
 
 ![Add Keptn Resource](screenshots/task-add-resource.png)
+
+## Development
+
+Development Docs are available in [README_DEV](README_DEV.md).
 
 ## Release notes ##
 * **0.1.4**
