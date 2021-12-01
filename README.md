@@ -103,6 +103,9 @@ Although you can add the SLI, SLO and Dynatrace config files via the **Prepare K
 
 ![Add Keptn Resource](screenshots/task-add-resource.png)
 
+## Features
+
+A list of use-cases and features that this library supports is provided in [FEATURES.md](FEATURES.md).
 ## Development
 
 Development Docs are available in [README_DEV](README_DEV.md).
