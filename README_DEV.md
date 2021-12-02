@@ -14,31 +14,33 @@ In the main directory run
 npm install
 ```
 
-Go to each Task directory and run
+Then run
 ```
-npm install
+npm run install-all
 ```
 
-## Build
+which will go to each task directory and install dependencies there.
+
+## Clean, Build, Test (CBT)
 
 In the main directory, run
 ```
+npm run cbt
+```
+which will clean the repo, build (transpile) the code, and test it. Alternatively, you can those steps on your own:
+
+```
+npm run clean
+
 npm run build
-```
 
-## Test
-
-**Important**: You need to run `npm run build` before you test the package!
-
-In the main directory, run
-```
 npm run test-prep
 npm run test-send
 npm run test-wait
 npm run test-addr
 ```
 
-## Test the extension
+# Test the extension
 
 ## Create Private Dev VSIX Package
 
