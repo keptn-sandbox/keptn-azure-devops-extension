@@ -16,7 +16,7 @@ Watch the following Keptn Community Webinar to see the extension in action:
 
 You can find out the latest release on the [VisualStudio Marketplace](https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration).
 
-This integration aims to be compatible with Keptn 0.9.x and 0.10.0. For more information, please scroll down to [Release notes](#release-notes).
+This integration aims to be compatible with Keptn 0.9.x and 0.10.0. For more information, please take a look at [CHANGELOG.md](CHANGELOG.md).
 
 ## The service endpoint
 First of all you need to configure the [Keptn][keptn_link] endpoint as a [`service connection`](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml).
@@ -107,46 +107,12 @@ Although you can add the SLI, SLO and Dynatrace config files via the **Prepare K
 
 Development Docs are available in [README_DEV](README_DEV.md).
 
-## Release notes ##
-* **0.1.4**
-First public version
-* **0.1.5**
-Added SLI and SLO upload
-* **0.1.14**
-Github tickets 16, 14, 2, 7, 17, 18, 8, 19, 10
-* **0.1.15**
-Added support for the deployment-finished event
-* **0.1.17**
-Github ticket 32: some changes to support keptn 0.7 and higher
-Updated README.md
-* **1.0.0**
-Github ticket 6 beïng implementation of the configuration changed event
-Updated README.md
-* **1.0.5**
-Github ticket 30: added support to upload dynatrace.conf file.
-Added support for timeframe in the StartEvaluation event. Available since Keptn 0.7.3.
-Updated README.md
-* **1.1.0**
-Added support for custom labels
-Added separate task to upload resources to Keptn
-Updated README.md
-* **1.1.1**
-Bugfix packages Add Keptn Resource task 
-* **1.3.0**
-Added support for Keptn 0.8.x - quality gates 
-* **1.3.1**
-Modified icons for a nicer integration on the Dynatrace Hub
-* **1.3.3**
-Bugfix in startEvaluation. Endpoint does not require evaluation in body.
-* **1.3.5**
-Fix issue 34 by implementing delivery and generic triggered events.
-* **1.3.6**
-Improvement issue 35 by implementing wait for evaluation, delivery and generic triggered events.
-* **1.4.1**
-Support 0.9.x during project initiation. version 2 of prepare task.
+## License and Credits
 
-Created by `Bert Van der Heyden, Inetum-RealDolmen`.
+Initially created by `Bert Van der Heyden, Inetum-RealDolmen`.
+
 Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration
+
 > Want to know more about our offering regarding [Dynatrace][dynatrace_link] and [Keptn][keptn_link]? Please contact us: https://www.realdolmen.com/en/solution/digital-performance-management
 > Looking for official support for this plugin? See: https://www.realdolmen.com/en/solution/cicd-pipeline-quality-gates
 
