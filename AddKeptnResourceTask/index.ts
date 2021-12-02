@@ -166,7 +166,7 @@ async function run(input:Params){
  */
 async function addResource(input:Params, localPath:string, remoteUri:string, httpClient:AxiosInstance, keptnVersion:string){
 	console.log('adding resource ' + localPath + ' to keptn target ' + remoteUri);
-	let resourceContent = fs.readFileSync(localPath,'utf8');
+	let resourceContent = fs.readFileSync(localPath); // do not use an encoding here to get binary files
 	let endpointUri = '/configuration-service/v1/project/';
 	if (keptnVersion == '0.6'){
 		endpointUri = '/v1/project/';
