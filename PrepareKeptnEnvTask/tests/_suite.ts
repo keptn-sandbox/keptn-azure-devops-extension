@@ -11,6 +11,23 @@ describe('Prepare Keptn Env task tests', function () {
     after(() => {
 
     });
+
+	it('must fail creating a project when projectname is invalid', function(done: MochaDone) {
+		this.timeout(10000);
+
+		let tp = path.join(__dirname, 'createproject_invalid.js');
+	    let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
+	
+		tr.run();
+		
+		console.log(tr.succeeded);
+		console.log(tr.stdout);
+		console.log(tr.stderr);
+
+	    assert.equal(tr.succeeded, false, 'should not have succeeded');
+
+		done();
+	});
 	
 	it('must create a project', function(done: MochaDone) {
 		this.timeout(10000);
