@@ -6,8 +6,8 @@ This document describes a list of use-cases and features that this extension pro
 
 The following are the core use cases that this integration supports. If you have another use case, please let us know by creating an Issue.
 
-* UC 1: As a user, I want to trigger a Keptn quality gate evaluation from within Jenkins
-* UC 2: As a user, I want to trigger a delivery with Keptn from within Jenkins
+* UC 1: As a user, I want to trigger a Keptn quality gate evaluation from within an Azure DevOps Pipeline
+* UC 2: As a user, I want to trigger a delivery with Keptn from within an Azure DevOps Pipeline
 * UC 3: As a user, I want to create a project, a service, and push files to the Keptn configuration repo
 
 
