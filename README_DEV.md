@@ -9,6 +9,13 @@ This repo contains multiple tasks! Each one of them is bundled into the extensio
 
 ## Setup
 
+**Important:** the setup has been tested using node 14 LTS. If you use a different node version stuff may break!
+
+Install typescript compiler (4.0.2 is the [version recommended by Microsoft](https://docs.microsoft.com/en-us/azure/devops/extend/develop/add-build-task?view=azure-devops#prerequisites)
+```
+npm install typescript@4.0.2 -g --save-dev
+```
+
 In the main directory run
 ```
 npm install
@@ -22,6 +29,8 @@ npm run install-all
 which will go to each task directory and install dependencies there.
 
 ## Clean, Build, Test (CBT)
+
+**Note:** at the time of writing, existing tests are flaky, please proceed with caution
 
 In the main directory, run
 ```
