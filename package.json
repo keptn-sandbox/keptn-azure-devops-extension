@@ -9,8 +9,9 @@
     "test-send": "mocha SendKeptnEventTask/tests/_suite.js",
     "test-wait": "mocha WaitForKeptnEventTask/tests/_suite.js",
     "test-addr": "mocha AddKeptnResourceTask/tests/_suite.js",
+    "test-all": "npm run test-prep && npm run test-send && npm run test-wait && npm run test-addr",
     "install-all": "cd PrepareKeptnEnvTask && npm install && cd ../SendKeptnEventTask && npm install && cd ../WaitForKeptnEventTask && npm install && cd ../AddKeptnResourceTask && npm install && cd ..",
-    "cbt": "npm run clean && npm run build && npm run test-prep && npm run test-send && npm run test-wait && npm run test-addr",
+    "cbt": "npm run clean && npm run build && npm run test-all",
     "package-dev": "gulp --dev && tfx extension create --manifest-globs vss-extension.json",
     "package": "gulp --public && tfx extension create --manifest-globs vss-extension.json"
   },
