@@ -30,7 +30,7 @@ describe('Send Keptn Event task tests', function () {
 	    done();
 	});
 	
-	it('must send out start-evaluation', function(done: Mocha.Done) {
+	it.skip('must send out start-evaluation', function(done: Mocha.Done) {
 		this.timeout(10000);
 
 		let tp = path.join(__dirname, 'sendstartevaluation.js');
@@ -50,7 +50,7 @@ describe('Send Keptn Event task tests', function () {
 	    done();
 	});
 
-	it('must send out deployment-finished', function(done: Mocha.Done) {
+	it.skip('must send out deployment-finished', function(done: Mocha.Done) {
 		this.timeout(10000);
 
 		let tp = path.join(__dirname, 'senddeploymentfinished.js');
@@ -70,7 +70,7 @@ describe('Send Keptn Event task tests', function () {
 	    done();
 	});
 
-	it('must send out configuration-changed', function(done: Mocha.Done) {
+	it.skip('must send out configuration-changed', function(done: Mocha.Done) {
 		this.timeout(10000);
 
 		let tp = path.join(__dirname, 'sendconfigurationchanged.js');
@@ -90,7 +90,7 @@ describe('Send Keptn Event task tests', function () {
 	    done();
 	});
 
-	it('must send out delivery triggered', function(done: Mocha.Done) {
+	it.skip('must send out delivery triggered', function(done: Mocha.Done) {
 		this.timeout(10000);
 
 		let tp = path.join(__dirname, 'senddeliverytriggered.js');
@@ -110,7 +110,7 @@ describe('Send Keptn Event task tests', function () {
 	    done();
 	});
 
-	it('must send out generic event triggered', function(done: Mocha.Done) {
+	it.skip('must send out generic event triggered', function(done: Mocha.Done) {
 		this.timeout(10000);
 
 		let tp = path.join(__dirname, 'sendgenerictriggered.js');
@@ -130,7 +130,7 @@ describe('Send Keptn Event task tests', function () {
 	    done();
 	});
 	
-	it('should fail on bad input', function(done: Mocha.Done) {
+	it.skip('should fail on bad input', function(done: Mocha.Done) {
 		let tp = path.join(__dirname, 'badinput.js');
 		let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
 
