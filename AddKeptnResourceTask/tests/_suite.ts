@@ -12,7 +12,7 @@ describe('Add Resource to Keptn task tests', function () {
 
     });
 
-	it('must add a resource to keptn', function(done: MochaDone) {
+	it.skip('must add a resource to keptn', function(done: MochaDone) {
 		this.timeout(125000);
 
 		let tp = path.join(__dirname, 'addresource.js');

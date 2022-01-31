@@ -29,7 +29,7 @@ describe('Prepare Keptn Env task tests', function () {
 		done();
 	});
 	
-	it('must create a project', function(done: MochaDone) {
+	it.skip('must create a project', function(done: MochaDone) {
 		this.timeout(10000);
 
 		let tp = path.join(__dirname, 'createproject.js');
@@ -47,7 +47,7 @@ describe('Prepare Keptn Env task tests', function () {
 	    done();
 	});
 
-	it('must add resources', function(done: MochaDone) {
+	it.skip('must add resources', function(done: MochaDone) {
 		this.timeout(10000);
 
 		let tp = path.join(__dirname, 'addresources.js');
