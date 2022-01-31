@@ -4,6 +4,7 @@
     "module": "commonjs",
     "strict": true,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
@@ -11,6 +12,7 @@
     "./PrepareKeptnEnvTask/**/*",
     "./SendKeptnEventTask/**/*",
     "./WaitForKeptnEventTask/**/*",
-    "./AddKeptnResourceTask/**/*"
+    "./AddKeptnResourceTask/**/*",
+    "./scripts/**/*"
   ]
 }
