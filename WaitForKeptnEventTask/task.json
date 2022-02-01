@@ -1,7 +1,7 @@
 {
-  "id": "{{task.WaitForKeptnEventTask.taskId}}",
+  "id": "2f7a32d0-699f-4693-8955-e5ff64e3f4a1",
   "name": "WaitForKeptnEventTask",
-  "friendlyName": "{{task.WaitForKeptnEventTask.friendlyName}}",
+  "friendlyName": "Wait for Keptn Event",
   "description": "Wait for an answer of a Keptn event",
   "author": "Dynatrace",
   "helpMarkDown": "Wait for an answer of a Keptn event",

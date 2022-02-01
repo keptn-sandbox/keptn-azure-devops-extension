@@ -1,9 +1,9 @@
 {
-  "id": "{{task.AddKeptnResourceTask.taskId}}",
+  "id": "c800edec-4390-11eb-b378-0242ac130002",
   "name": "AddKeptnResourceTask",
-  "friendlyName": "{{task.AddKeptnResourceTask.friendlyName}}",
+  "friendlyName": "Add Keptn Resource",
   "description": "Add a resource to the Keptn environment",
-  "author": "Realdolmen (Bert Van der Heyden)",
+  "author": "Dynatrace",
   "helpMarkDown": "Add a resource to the Keptn environment",
   "category": "Test",
   "visibility": [

@@ -1,7 +1,7 @@
 {
-  "id": "{{task.KeptnCLITask.taskId}}",
+  "id": "bfda8bdc-0410-11ec-9a03-0242ac130003",
   "name": "KeptnCLITask",
-  "friendlyName": "{{task.KeptnCLITask.friendlyName}}",
+  "friendlyName": "Run a Keptn CLI command",
   "description": "Download and run a Keptn CLI command",
   "author": "Dynatrace",
   "helpMarkDown": "Download and run a Keptn CLI command",
