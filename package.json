@@ -13,7 +13,9 @@
     "install-all": "cd PrepareKeptnEnvTask && npm install && cd ../SendKeptnEventTask && npm install && cd ../WaitForKeptnEventTask && npm install && cd ../AddKeptnResourceTask && npm install && cd ..",
     "cbt": "npm run clean && npm run build && npm run test-all",
     "package-dev": "tfx extension create --manifest-js manifest.js --env mode=development",
-    "package": "tfx extension create --manifest-js manifest.js "
+    "package": "tfx extension create --manifest-js manifest.js",
+    "publish-dev": "tfx extension publish -t ${AZDO_PUBTOKEN} --manifest-js manifest.js --env mode=development",
+    "publish": "tfx extension publish -t ${AZDO_PUBTOKEN} --manifest-js manifest.js"
   },
   "repository": {
     "type": "git",
