@@ -3,7 +3,7 @@
   "name": "SendKeptnEventTask",
   "friendlyName": "{{task.SendKeptnEventTask.friendlyName}}",
   "description": "Send cloud-event to Keptn",
-  "author": "Realdolmen (Bert Van der Heyden)",
+  "author": "Dynatrace",
   "helpMarkDown": "Send cloud-event to Keptn. Use startEvaluation to trigger Keptn to perform the SLI/SLO based validation.",
   "category": "Test",
   "visibility": [

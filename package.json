@@ -19,7 +19,7 @@
     "type": "git",
     "url": "https://github.com/keptn-sandbox/keptn-azure-devops-extension"
   },
-  "author": "Bert Van der Heyden (realdolmen.com)",
+  "author": "Dynatrace",
   "devDependencies": {
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.13.4",

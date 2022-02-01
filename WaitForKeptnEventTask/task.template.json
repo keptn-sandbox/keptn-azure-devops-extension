@@ -3,7 +3,7 @@
   "name": "WaitForKeptnEventTask",
   "friendlyName": "{{task.WaitForKeptnEventTask.friendlyName}}",
   "description": "Wait for an answer of a Keptn event",
-  "author": "Realdolmen (Bert Van der Heyden)",
+  "author": "Dynatrace",
   "helpMarkDown": "Wait for an answer of a Keptn event",
   "category": "Test",
   "visibility": [

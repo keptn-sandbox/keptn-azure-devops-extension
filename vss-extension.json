@@ -1,10 +1,10 @@
 {
   "manifestVersion": 1,
-  "id": "keptn-integration",
-  "version": "1.4.1",
-  "name": "Keptn Integration",
+  "id": "cloud-automation-integration",
+  "version": "1.5.0",
+  "name": "Cloud Automation Integration",
   "description": "Integration of Keptn within your build or release pipeline.",
-  "publisher": "RealdolmenDevOps",
+  "publisher": "dynatrace",
   "targets": [{
     "id": "Microsoft.VisualStudio.Services"
   }],
@@ -21,11 +21,6 @@
   "content": {
     "details": {
       "path": "README.md"
-    }
-  },
-  "links": {
-    "support": {
-        "uri": "https://www.realdolmen.com/en/solution/cicd-pipeline-quality-gates"
     }
   },
   "repository": {

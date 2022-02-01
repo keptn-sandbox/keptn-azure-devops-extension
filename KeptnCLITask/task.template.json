@@ -3,7 +3,7 @@
   "name": "KeptnCLITask",
   "friendlyName": "{{task.KeptnCLITask.friendlyName}}",
   "description": "Download and run a Keptn CLI command",
-  "author": "Realdolmen (Bert Van der Heyden)",
+  "author": "Dynatrace",
   "helpMarkDown": "Download and run a Keptn CLI command",
   "category": "Test",
   "visibility": [

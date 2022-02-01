@@ -23,11 +23,6 @@
       "path": "README.md"
     }
   },
-  "links": {
-    "support": {
-        "uri": "https://www.realdolmen.com/en/solution/cicd-pipeline-quality-gates"
-    }
-  },
   "repository": {
     "type": "git",
     "uri": "https://github.com/keptn-sandbox/keptn-azure-devops-extension"
