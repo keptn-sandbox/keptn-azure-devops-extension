@@ -1,9 +1,9 @@
 {
-  "id": "{{task.PrepareKeptnEnvTask.taskId}}",
+  "id": "872b7882-7628-4b7a-9d45-6fd14907c03f",
   "name": "PrepareKeptnEnvTask",
-  "friendlyName": "{{task.PrepareKeptnEnvTask.friendlyName}}",
+  "friendlyName": "Prepare Keptn environment",
   "description": "Initialize Keptn environment with project and stage",
-  "author": "Realdolmen (Bert Van der Heyden)",
+  "author": "Dynatrace",
   "helpMarkDown": "Initialize Keptn environment with project and stage",
   "category": "Test",
   "visibility": [

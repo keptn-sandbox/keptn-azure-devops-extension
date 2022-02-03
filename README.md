@@ -1,4 +1,4 @@
-# Azure DevOps Keptn Integration
+# Azure DevOps Cloud Automation Integration
 
 Integration of [Keptn][keptn_link] within your Azure DevOps pipelines. 
 
@@ -114,10 +114,7 @@ Development Docs are available in [README_DEV](README_DEV.md).
 
 Initially created by `Bert Van der Heyden, Inetum-RealDolmen`.
 
-Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration
-
-> Want to know more about our offering regarding [Dynatrace][dynatrace_link] and [Keptn][keptn_link]? Please contact us: https://www.realdolmen.com/en/solution/digital-performance-management
-> Looking for official support for this plugin? See: https://www.realdolmen.com/en/solution/cicd-pipeline-quality-gates
+Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=dynatrace.cloud-automation-integration
 
 [keptn_link]: https://keptn.sh
 [dynatrace_link]: https://dynatrace.com

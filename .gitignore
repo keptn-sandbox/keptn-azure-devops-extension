@@ -1,7 +1,6 @@
 node_modules
 *Task/*.js
 *Task/**/*.js
-*Task/task.json
 .project
 .taskkey
 .vscode

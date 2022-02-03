@@ -59,9 +59,7 @@ In the main directory, run
 ```
 npm run package-dev
 ```
-**Note**: See config.json `dev` section for configuration
-
-Finally, publish the extension in your Visual Studio Marketplace (use your Dev publisher).
+**Note**: See [manifest.js](manifest.js) section for configuration
 
 ## Create Public Release VSIX Package
 
@@ -71,7 +69,21 @@ In the main directory, run
 ```
 npm run package
 ```
-**Note**: See config.json `public` section for configuration
+**Note**: See [manifest.js](manifest.js) section for configuration
 
-Finally, publish the extension in your Visual Studio Marketplace.
 
+## Publish private or public release
+
+**Important**: You need to run `npm run build` before you publish the package!
+
+There are 2 npm scripts `publish-dev` and `publish` that will package and publish
+the extension ( private and public respectively) in a single command provided that
+a personal access token is passed in env variable `AZDO_PUBTOKEN`, so:
+- To publish a private version of the extension
+```
+AZDO_PUBTOKEN=<your token goes here> npm run publish-dev
+```
+- To publish a public version fo the extension
+```
+AZDO_PUBTOKEN=<your token goes here> npm run publish
+```
