@@ -1,8 +1,8 @@
-# Azure DevOps Cloud Automation Integration
+# Azure DevOps Cloud Automation Integration powered by Keptn
 
-Integration of [Keptn][keptn_link] within your Azure DevOps pipelines. 
+Integration of Cloud Automation powered by [Keptn][keptn_link] within your Azure DevOps pipelines. 
 
-This extension includes 4 tasks which can be used to integrate your pipeline with the [Keptn][keptn_link] capabilities.
+This extension includes 4 tasks which can be used to integrate your pipeline with Cloud Automation [Keptn][keptn_link] capabilities.
 - Prepare [Keptn][keptn_link] environment
 - Send [Keptn][keptn_link] event
 - Wait for [Keptn][keptn_link] event
@@ -14,7 +14,7 @@ Watch the following Keptn Community Webinar to see the extension in action:
 
 ## Compatibility matrix
 
-You can find out the latest release on the [VisualStudio Marketplace](https://marketplace.visualstudio.com/items?itemName=RealdolmenDevOps.keptn-integration).
+You can find out the latest release on the [VisualStudio Marketplace](https://marketplace.visualstudio.com/items?itemName=dynatrace.cloud-automation-integration).
 
 This integration aims to be compatible with Keptn 0.9.x and 0.10.0. For more information, please take a look at [CHANGELOG.md](CHANGELOG.md).
 
@@ -114,7 +114,7 @@ Development Docs are available in [README_DEV](README_DEV.md).
 
 Initially created by `Bert Van der Heyden, Inetum-RealDolmen`.
 
-Also available via the MarketPlace: https://marketplace.visualstudio.com/items?itemName=dynatrace.cloud-automation-integration
+Also available via the Visual Studio MarketPlace: https://marketplace.visualstudio.com/items?itemName=dynatrace.cloud-automation-integration
 
 [keptn_link]: https://keptn.sh
 [dynatrace_link]: https://dynatrace.com
