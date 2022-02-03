@@ -7,7 +7,7 @@ module.exports = (env) => {
 		"id": `cloud-automation-integration${idPostfix}`,
 		"version": version,
 		"name": `Cloud Automation Integration ${namePostfix}`,
-		"description": "Integration of Keptn within your build or release pipeline.",
+		"description": "Integration of Cloud Automation powered by Keptn within your build or release pipeline.",
 		"publisher": "dynatrace",
 		"targets": [{
 		  "id": "Microsoft.VisualStudio.Services"
