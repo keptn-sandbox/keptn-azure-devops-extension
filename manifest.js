@@ -1,5 +1,5 @@
 module.exports = (env) => {
-	let [idPostfix, namePostfix] = (env.mode == "development") ? ["-dev", " [DEV]"] : ["", ""];
+	let [idPostfix, namePostfix, isPublic] = (env.mode == "development") ? ["-dev", " [DEV]", false] : ["", "", true];
     let version = (env.version != undefined) ? env.version : "1.5.0";
 
 	let manifest = {
@@ -9,6 +9,7 @@ module.exports = (env) => {
 		"name": `Cloud Automation Integration ${namePostfix}`,
 		"description": "Integration of Cloud Automation powered by Keptn within your build or release pipeline.",
 		"publisher": "dynatrace",
+		"public": isPublic,
 		"targets": [{
 		  "id": "Microsoft.VisualStudio.Services"
 		}],
