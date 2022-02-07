@@ -1,5 +1,5 @@
 {
-  "id": "3dad0d84-35db-4852-9355-43fd02e2e147",
+  "id": "ba752567-3f3e-436c-a7b5-bb067d17b3d3",
   "name": "SendKeptnEventTask",
   "friendlyName": "Send cloud-event to Keptn",
   "description": "Send cloud-event to Keptn",

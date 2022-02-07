@@ -39,7 +39,7 @@ module.exports = (env) => {
 			"type": "ms.vss-endpoint.service-endpoint-type",
 			"targets": [ "ms.vss-endpoint.endpoint-types" ],
 			"properties": {
-			  "name": "Keptn",
+			  "name": "Keptn-Api-Endpoint",
 			  "displayName": "Keptn",
 			  "url": {
 				"displayName": "Keptn API Url",

@@ -1,5 +1,5 @@
 {
-  "id": "872b7882-7628-4b7a-9d45-6fd14907c03f",
+  "id": "e2db33bd-54ee-45c6-b7e6-8fb67d93fe00",
   "name": "PrepareKeptnEnvTask",
   "friendlyName": "Prepare Keptn environment",
   "description": "Initialize Keptn environment with project and stage",
