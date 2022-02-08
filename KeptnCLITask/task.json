@@ -26,7 +26,7 @@
   "inputs": [
   	{
       "name": "keptnApiEndpoint",
-      "type": "connectedService:Keptn",
+      "type": "connectedService:Keptn-Api-Endpoint",
       "label": "Keptn API Endpoint",
       "defaultValue": "",
       "required": true,
