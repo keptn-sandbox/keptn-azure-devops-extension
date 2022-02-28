@@ -100,14 +100,26 @@ module.exports = (env) => {
 			"path": "PrepareKeptnEnvTask"
 		  },
 		  {
+			"path": "dist", "packagePath": "/PrepareKeptnEnvTask"
+		  },
+		  {
 			"path": "SendKeptnEventTask"
+		  },
+		  {
+			"path": "dist", "packagePath": "/SendKeptnEventTask"
 		  },
 		  {
 			"path": "WaitForKeptnEventTask"
 		  },
 		  {
+			"path": "dist", "packagePath": "/WaitForKeptnEventTask"
+		  },
+		  {
 			"path": "AddKeptnResourceTask"
-		  }
+		  },
+		  {
+			"path": "dist", "packagePath": "/AddKeptnResourceTask"
+		  },
 		]
 	  }
 
