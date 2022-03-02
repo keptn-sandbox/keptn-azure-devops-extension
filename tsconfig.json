@@ -11,6 +11,6 @@
     "./PrepareKeptnEnvTask/**/*",
     "./SendKeptnEventTask/**/*",
     "./WaitForKeptnEventTask/**/*",
-    "./AddKeptnResourceTask/**/*"
+    "./AddResourceTask/**/*"
   ]
 }

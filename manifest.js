@@ -1,3 +1,41 @@
+function addTaskToContribution(contributions, taskId, taskName, taskDescription) {
+
+	contributions.push(
+		{
+			id: taskId,
+			description: taskDescription,
+			type: "ms.vss-distributed-task.task",
+			targets: [ "ms.vss-distributed-task.tasks" ],
+			properties: {
+			  name: taskName
+			}
+		  }
+	)
+	
+}
+
+function addPathToFileContributions(fileContributions, depPath, taskPath, packagedTaskPath) {
+
+	if(packagedTaskPath == undefined || packagedTaskPath === "" ) {
+		packagedTaskPath = taskPath
+	}
+
+	taskObj = {
+		path: taskPath,
+		packagePath: packagedTaskPath
+	}
+
+
+	fileContributions.push(
+		{
+			path: depPath, packagePath: packagedTaskPath
+		},
+		taskObj,
+	)
+
+}
+
+
 module.exports = (env) => {
 	let [idPostfix, namePostfix, isPublic] = (env.mode == "development") ? ["-dev", " [DEV]", false] : ["", "", true];
     let version = (env.version != undefined) ? env.version : "1.5.0";
@@ -80,15 +118,6 @@ module.exports = (env) => {
 			  "name": "WaitForKeptnEventTask"
 			}
 		  },
-		  {
-			"id": "add-keptn-resource",
-			"description": "Add a resource to Keptn",
-			"type": "ms.vss-distributed-task.task",
-			"targets": [ "ms.vss-distributed-task.tasks" ],
-			"properties": {
-			  "name": "AddKeptnResourceTask"
-			}
-		  }
 		],
 		"files": [
 		  {
@@ -115,14 +144,11 @@ module.exports = (env) => {
 		  {
 			"path": "dist", "packagePath": "/WaitForKeptnEventTask"
 		  },
-		  {
-			"path": "AddKeptnResourceTask"
-		  },
-		  {
-			"path": "dist", "packagePath": "/AddKeptnResourceTask"
-		  },
 		]
 	  }
+
+	  addTaskToContribution(manifest.contributions, "add-keptn-resource", "AddResourceTask", "Add a resource to Keptn")
+	  addPathToFileContributions(manifest.files, "dist", "AddResourceTask/AddResourceTaskV1")
 
 	return manifest;
 }
