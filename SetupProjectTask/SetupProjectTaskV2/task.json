@@ -1,7 +1,7 @@
 {
   "id": "e2db33bd-54ee-45c6-b7e6-8fb67d93fe00",
-  "name": "PrepareKeptnEnvTask",
-  "friendlyName": "Prepare Keptn environment",
+  "name": "SetupProjectTask",
+  "friendlyName": "Setup Keptn project environment",
   "description": "Initialize Keptn environment with project and stage",
   "author": "Dynatrace",
   "helpMarkDown": "Initialize Keptn environment with project and stage",

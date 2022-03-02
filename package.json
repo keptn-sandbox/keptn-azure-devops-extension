@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rimraf ./*.vsix ./dist",
     "build": "tsc -p .",
-    "test-prep": "mocha PrepareKeptnEnvTask/tests/_suite.js",
+    "test-prep": "mocha SetupProjectTask/SetupProjectTaskV2/tests/_suite.js",
     "test-send": "mocha SendKeptnEventTask/tests/_suite.js",
     "test-wait": "mocha WaitForKeptnEventTask/tests/_suite.js",
     "test-addr": "mocha AddResourceTask/AddResourceTaskV1/tests/_suite.js",
