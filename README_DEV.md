@@ -21,13 +21,6 @@ In the main directory run
 npm install
 ```
 
-Then run
-```
-npm run install-all
-```
-
-which will go to each task directory and install dependencies there.
-
 ## Clean, Build, Test (CBT)
 
 **Note:** at the time of writing, existing tests are flaky, please proceed with caution

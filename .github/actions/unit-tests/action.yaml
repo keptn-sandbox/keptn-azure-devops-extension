@@ -26,7 +26,7 @@ runs:
       run: npm install typescript@4.0.2
     - name: Install Dependencies
       shell: bash
-      run: npm install && npm run install-all
+      run: npm install
     - name: Build
       shell: bash
       run: npm run build
