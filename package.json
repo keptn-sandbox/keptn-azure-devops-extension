@@ -12,10 +12,10 @@
     "test-all": "npm run test-prep && npm run test-send && npm run test-wait && npm run test-addr",
     "cbt": "npm run clean && npm run build && npm run test-all",
     "package-prod-deps": "rimraf ./dist/node_modules/ ./dist/package.json && mkdir -p ./dist && cp ./package.json  ./dist/ && npm install --production --prefix ./dist",
-    "package-dev": "npm run package-prod-deps && tfx extension create --manifest-js manifest.js --env mode=development",
-    "package": "npm run package-prod-deps && tfx extension create --manifest-js manifest.js",
-    "publish-dev": "npm run package-prod-deps && tfx extension publish -t ${AZDO_PUBTOKEN} --manifest-js manifest.js --env mode=development",
-    "publish": "npm run package-prod-deps && tfx extension publish -t ${AZDO_PUBTOKEN} --manifest-js manifest.js"
+    "package-dev": "npm run package-prod-deps && tfx extension create --manifest-js manifest.js --env mode=development,version=${AZDO_EXT_VERSION}",
+    "package": "npm run package-prod-deps && tfx extension create --manifest-js manifest.js --env version=${AZDO_EXT_VERSION}",
+    "publish-dev": "npm run package-prod-deps && tfx extension publish -t ${AZDO_PUBTOKEN} --manifest-js manifest.js --env mode=development,version=${AZDO_EXT_VERSION}",
+    "publish": "npm run package-prod-deps && tfx extension publish -t ${AZDO_PUBTOKEN} --manifest-js manifest.js --env version=${AZDO_EXT_VERSION}"
   },
   "repository": {
     "type": "git",
