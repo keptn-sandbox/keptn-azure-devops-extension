@@ -6,7 +6,7 @@
     "clean": "rimraf ./*.vsix ./dist",
     "build": "tsc -p .",
     "test-prep": "mocha SetupProjectTask/SetupProjectTaskV2/tests/_suite.js",
-    "test-send": "mocha SendKeptnEventTask/tests/_suite.js",
+    "test-send": "mocha SendEventTask/SendEventTaskV3/tests/_suite.js",
     "test-wait": "mocha WaitForKeptnEventTask/tests/_suite.js",
     "test-addr": "mocha AddResourceTask/AddResourceTaskV1/tests/_suite.js",
     "test-all": "npm run test-prep && npm run test-send && npm run test-wait && npm run test-addr",

@@ -92,15 +92,6 @@ module.exports = (env) => {
 			}
 		  },
 		  {
-			"id": "send-keptn-event",
-			"description": "Send an event to Keptn",
-			"type": "ms.vss-distributed-task.task",
-			"targets": [ "ms.vss-distributed-task.tasks" ],
-			"properties": {
-			  "name": "SendKeptnEventTask"
-			}
-		  },
-		  {
 			"id": "waitfor-keptn-event",
 			"description": "Wait for an event from Keptn",
 			"type": "ms.vss-distributed-task.task",
@@ -118,12 +109,6 @@ module.exports = (env) => {
 			"path": "screenshots", "addressable": true
 		  },
 		  {
-			"path": "SendKeptnEventTask"
-		  },
-		  {
-			"path": "dist", "packagePath": "/SendKeptnEventTask"
-		  },
-		  {
 			"path": "WaitForKeptnEventTask"
 		  },
 		  {
@@ -138,6 +123,8 @@ module.exports = (env) => {
 	  addTaskToContribution(manifest.contributions, "prep-keptn-env", "SetupProjectTask", "Setup Keptn project environment")
 	  addPathToFileContributions(manifest.files, "dist", "SetupProjectTask/SetupProjectTaskV2")
 
+	  addTaskToContribution(manifest.contributions, "send-keptn-event", "SendEventTask", "Send an event to Keptn")
+	  addPathToFileContributions(manifest.files, "dist", "SendEventTask/SendEventTaskV3")
 
 
 	return manifest;

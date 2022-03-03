@@ -1,6 +1,6 @@
 {
   "id": "ba752567-3f3e-436c-a7b5-bb067d17b3d3",
-  "name": "SendKeptnEventTask",
+  "name": "SendEventTask",
   "friendlyName": "Send cloud-event to Keptn",
   "description": "Send cloud-event to Keptn",
   "author": "Dynatrace",
