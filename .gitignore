@@ -4,7 +4,6 @@ node_modules
 .project
 .taskkey
 .vscode
-package-lock.json
 .publish.sh
 *.vsix
 dist/
