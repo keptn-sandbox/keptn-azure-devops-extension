@@ -91,15 +91,6 @@ module.exports = (env) => {
 			  "helpMarkDown": "<a href=\"https://github.com/keptn-sandbox/keptn-azure-devops-extension\" target=\"_blank\"><b>Learn More</b></a>"
 			}
 		  },
-		  {
-			"id": "waitfor-keptn-event",
-			"description": "Wait for an event from Keptn",
-			"type": "ms.vss-distributed-task.task",
-			"targets": [ "ms.vss-distributed-task.tasks" ],
-			"properties": {
-			  "name": "WaitForKeptnEventTask"
-			}
-		  },
 		],
 		"files": [
 		  {
@@ -107,12 +98,6 @@ module.exports = (env) => {
 		  },
 		  {
 			"path": "screenshots", "addressable": true
-		  },
-		  {
-			"path": "WaitForKeptnEventTask"
-		  },
-		  {
-			"path": "dist", "packagePath": "/WaitForKeptnEventTask"
 		  },
 		]
 	  }
@@ -126,6 +111,8 @@ module.exports = (env) => {
 	  addTaskToContribution(manifest.contributions, "send-keptn-event", "SendEventTask", "Send an event to Keptn")
 	  addPathToFileContributions(manifest.files, "dist", "SendEventTask/SendEventTaskV3")
 
+	  addTaskToContribution(manifest.contributions, "waitfor-keptn-event", "WaitForEventTask", "Wait for a Keptn event")
+	  addPathToFileContributions(manifest.files, "dist", "WaitForEventTask/WaitForEventTaskV2")
 
 	return manifest;
 }

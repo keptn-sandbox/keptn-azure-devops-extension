@@ -1,6 +1,6 @@
 {
   "id": "1f5c81dc-4a43-493b-bcb2-48ce25ddade9",
-  "name": "WaitForKeptnEventTask",
+  "name": "WaitForEventTask",
   "friendlyName": "Wait for Keptn Event",
   "description": "Wait for an answer of a Keptn event",
   "author": "Dynatrace",

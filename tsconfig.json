@@ -10,7 +10,7 @@
   "include": [
     "./SetupProjectTask/**/*",
     "./SendEventTask/**/*",
-    "./WaitForKeptnEventTask/**/*",
+    "./WaitForEventTask/**/*",
     "./AddResourceTask/**/*"
   ]
 }
