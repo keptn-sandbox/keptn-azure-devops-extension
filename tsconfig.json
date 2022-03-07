@@ -8,9 +8,9 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "./SetupProjectTask/**/*",
-    "./SendEventTask/**/*",
-    "./WaitForEventTask/**/*",
-    "./AddResourceTask/**/*"
+    "./SetupKeptnProjectTask/**/*",
+    "./SendKeptnEventTask/**/*",
+    "./WaitForKeptnEventTask/**/*",
+    "./AddKeptnResourceTask/**/*"
   ]
 }

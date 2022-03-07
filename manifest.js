@@ -110,37 +110,37 @@ module.exports = (env) => {
   addTaskToContribution(
     manifest.contributions,
     "add-keptn-resource",
-    "AddResourceTask",
+    "AddKeptnResourceTask",
     "Add a resource to Keptn"
   );
   addPathToFileContributions(
     manifest.files,
     "dist",
-    "AddResourceTask/AddResourceTaskV1"
+    "AddKeptnResourceTask/AddKeptnResourceTaskV1"
   );
 
   addTaskToContribution(
     manifest.contributions,
     "prep-keptn-env",
-    "SetupProjectTask",
+    "SetupKeptnProjectTask",
     "Setup Keptn project environment"
   );
   addPathToFileContributions(
     manifest.files,
     "dist",
-    "SetupProjectTask/SetupProjectTaskV2"
+    "SetupKeptnProjectTask/SetupKeptnProjectTaskV2"
   );
 
   addTaskToContribution(
     manifest.contributions,
     "send-keptn-event",
-    "SendEventTask",
+    "SendKeptnEventTask",
     "Send an event to Keptn"
   );
   addPathToFileContributions(
     manifest.files,
     "dist",
-    "SendEventTask/SendEventTaskV3"
+    "SendKeptnEventTask/SendKeptnEventTaskV3"
   );
 
   addTaskToContribution(

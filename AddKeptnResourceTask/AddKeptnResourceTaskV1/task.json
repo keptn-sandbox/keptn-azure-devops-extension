@@ -1,7 +1,7 @@
 {
   "id": "8620874a-91c1-4300-b655-4b3c757e862c",
-  "name": "AddResourceTask",
-  "friendlyName": "Add Resource",
+  "name": "AddKeptnResourceTask",
+  "friendlyName": "Add Keptn Resource",
   "description": "Add a resource to the Keptn environment",
   "author": "Dynatrace",
   "helpMarkDown": "Add a resource to the Keptn environment",
@@ -84,7 +84,7 @@
     }
   ],
   "minimumAgentVersion": "1.83.0",
-  "instanceNameFormat": "Add resource",
+  "instanceNameFormat": "Add Keptn resource",
   "execution": {
     "Node10": {
       "target": "index.js",
