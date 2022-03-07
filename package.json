@@ -5,17 +5,17 @@
   "scripts": {
     "clean": "rimraf ./*.vsix ./dist",
     "build": "tsc -p .",
-    "test-prep": "mocha PrepareKeptnEnvTask/tests/_suite.js",
-    "test-send": "mocha SendKeptnEventTask/tests/_suite.js",
-    "test-wait": "mocha WaitForKeptnEventTask/tests/_suite.js",
-    "test-addr": "mocha AddKeptnResourceTask/tests/_suite.js",
+    "test-prep": "mocha SetupKeptnProjectTask/SetupKeptnProjectTaskV2/tests/_suite.js",
+    "test-send": "mocha SendKeptnEventTask/SendKeptnEventTaskV3/tests/_suite.js",
+    "test-wait": "mocha WaitForKeptnEventTask/WaitForKeptnEventTaskV2/tests/_suite.js",
+    "test-addr": "mocha AddKeptnResourceTask/AddKeptnResourceTaskV1/tests/_suite.js",
     "test-all": "npm run test-prep && npm run test-send && npm run test-wait && npm run test-addr",
     "cbt": "npm run clean && npm run build && npm run test-all",
-    "package-prod-deps": "rimraf ./dist/node_modules/ ./dist/package.json && cp ./package.json ./dist && npm install --production --prefix ./dist",
-    "package-dev": "npm run package-prod-deps && tfx extension create --manifest-js manifest.js --env mode=development",
-    "package": "npm run package-prod-deps && tfx extension create --manifest-js manifest.js",
-    "publish-dev": "npm run package-prod-deps && tfx extension publish -t ${AZDO_PUBTOKEN} --manifest-js manifest.js --env mode=development",
-    "publish": "npm run package-prod-deps && tfx extension publish -t ${AZDO_PUBTOKEN} --manifest-js manifest.js"
+    "package-prod-deps": "rimraf ./dist/node_modules/ ./dist/package.json && mkdir -p ./dist && cp ./package.json  ./dist/ && npm install --production --prefix ./dist",
+    "package-dev": "npm run package-prod-deps && tfx extension create --manifest-js manifest.js --env mode=development,version=${AZDO_EXT_VERSION}",
+    "package": "npm run package-prod-deps && tfx extension create --manifest-js manifest.js --env version=${AZDO_EXT_VERSION}",
+    "publish-dev": "npm run package-prod-deps && tfx extension publish -t ${AZDO_PUBTOKEN} --manifest-js manifest.js --env mode=development,version=${AZDO_EXT_VERSION}",
+    "publish": "npm run package-prod-deps && tfx extension publish -t ${AZDO_PUBTOKEN} --manifest-js manifest.js --env version=${AZDO_EXT_VERSION}"
   },
   "repository": {
     "type": "git",
@@ -27,10 +27,10 @@
     "@types/node": "^13.13.4",
     "@types/q": "^1.5.2",
     "install": "^0.13.0",
-    "mocha": "^7.1.2",
+    "mocha": "^9.2.1",
     "rimraf": "^2.6.3",
     "sync-request": "^6.1.0",
-    "tfx-cli": "^0.10.0",
+    "tfx-cli": "^0.11.0",
     "yargs": "^15.4.1"
   },
   "dependencies": {
