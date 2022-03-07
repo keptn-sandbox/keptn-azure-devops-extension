@@ -1,5 +1,7 @@
 {
-    "preMajor": true,
+    "packageFiles": [],
+    "bumpFiles": [],
+    "tagPrefix": "",
     "types": [
       {
         "type": "feat",
