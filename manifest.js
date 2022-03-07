@@ -104,6 +104,14 @@ module.exports = (env) => {
         path: "screenshots",
         addressable: true,
       },
+      {
+        path: "FEATURES.md",
+        addressable: true,
+      },
+      {
+        path: "CHANGELOG.md",
+        addressable: true
+      },
     ],
   };
 
