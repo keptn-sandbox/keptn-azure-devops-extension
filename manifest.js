@@ -146,13 +146,13 @@ module.exports = (env) => {
   addTaskToContribution(
     manifest.contributions,
     "waitfor-keptn-event",
-    "WaitForEventTask",
+    "WaitForKeptnEventTask",
     "Wait for a Keptn event"
   );
   addPathToFileContributions(
     manifest.files,
     "dist",
-    "WaitForEventTask/WaitForEventTaskV2"
+    "WaitForKeptnEventTask/WaitForKeptnEventTaskV2"
   );
 
   return manifest;
