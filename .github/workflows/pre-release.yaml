@@ -1,0 +1,33 @@
+name: Create Pre-Release
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Unit tests
+        uses: ./.github/actions/unit-tests
+
+  pre-release:
+    needs: test
+    name: Pre-Release
+    uses: keptn/gh-automation/.github/workflows/pre-release-integration.yml@v1.5.1
+
+  package-dev-extension:
+    needs: [pre-release]
+    name: "Package DEV extension"
+    runs-on: ubuntu-20.04
+    env:
+      VERSION: ${{ needs.pre-release.outputs.RELEASE_TAG }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PRE_RELEASE_SEPARATOR: "next"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - run: |
+          npm install
+          # transform x.y.z-next.{prerelease} into x.y.z.{prerelease} for packaging and publishing the extension as per Microsoft requirements
+          AZDO_EXT_VERSION=$(echo ${VERSION} | sed 's/-${{env.PRE_RELEASE_SEPARATOR}}\(\.[[:digit:]]\+\)$/\1/g') npm run package-dev
+          gh release upload "${VERSION}" *.vsix

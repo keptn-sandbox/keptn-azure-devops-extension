@@ -1,0 +1,32 @@
+name: Create Release
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Unit tests
+        uses: ./.github/actions/unit-tests
+
+  release:
+    needs: test
+    name: Release
+    uses: keptn/gh-automation/.github/workflows/release-integration.yml@v1.5.1
+
+  package-dev-extension:
+    needs: [release]
+    name: "Package PUBLIC extension"
+    runs-on: ubuntu-20.04
+    env:
+      VERSION: ${{ needs.release.outputs.RELEASE_TAG }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AZDO_EXT_VERSION: ${{ needs.release.outputs.RELEASE_TAG }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - run: |
+          npm install
+          npm run package
+          gh release upload "${VERSION}" *.vsix
