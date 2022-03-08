@@ -16,7 +16,7 @@ defaults:
 jobs:
   prepare_ci_run:
     name: Prepare CI Run
-    uses: keptn/gh-automation/.github/workflows/prepare-ci.yml@v1.4.0
+    uses: keptn/gh-automation/.github/workflows/prepare-ci.yml@v1.5.1
 
   ############################################################################
   # Unit tests                                                               #
