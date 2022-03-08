@@ -28,13 +28,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
-      - name: Install Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
       - name: Unit tests
         uses: ./.github/actions/unit-tests
         with:
           KEPTN_API_ENDPOINT: http://somekeptninstall.mock/api
           KEPTN_API_TOKEN: somefancysupersecrettoken
-
