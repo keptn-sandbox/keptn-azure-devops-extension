@@ -26,6 +26,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
       - name: Publish Dev Extension
         env:
           AZDO_PUBTOKEN: ${{ secrets.AZDO_PUBTOKEN }}
