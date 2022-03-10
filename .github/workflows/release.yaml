@@ -26,7 +26,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-      - run: |
+      - name: Publish Dev Extension
+        env:
+          AZDO_PUBTOKEN: ${{ secrets.AZDO_PUBTOKEN }}
+        run: |
           npm install
           npm run package
           gh release upload "${VERSION}" *.vsix
+          npm run publish
