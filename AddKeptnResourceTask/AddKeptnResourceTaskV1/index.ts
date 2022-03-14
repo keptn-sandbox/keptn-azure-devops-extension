@@ -118,77 +118,75 @@ function filePathInput(input:string): string|undefined{
  * 
  * @param input Parameters
  */
-async function run(input:Params){
-	try{
-		const httpClient = axios.create({
-			httpsAgent: new https.Agent({  
-				rejectUnauthorized: false
-			})
-		});
+async function run(input: Params) {
+  try {
+    const httpClient = axios.create({
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false,
+      }),
+    });
 
-		let keptnVersion;
-		//Check which version of Keptn we have here
-		{
-			let options = {
-				method: <Method>"GET",
-				url: input.keptnApiEndpoint + '/v1/metadata',
-				headers: {'x-token': input.keptnApiToken},
-				validateStatus: (status:any) => status === 200 || status === 404
-			};
-		
-			let response = await httpClient(options);
-			if (response.status === 200){
-				console.log('metadata endpoint exists...');
-				keptnVersion = response.data.keptnversion;
-			}
-			else if (response.status === 404){
-				keptnVersion = '0.6'
-			}
-			console.log('keptnVersion = ' + keptnVersion);
-		}
-
-		if (input.resourceContentPath!=undefined && input.resourceUri!=undefined){
-			await addResource(input, input.resourceContentPath, input.resourceUri, httpClient, keptnVersion);
-		}
-	}catch(err){
-		throw err;
-	}
-	return "task finished";
+    if (
+      input.resourceContentPath != undefined &&
+      input.resourceUri != undefined
+    ) {
+		// TODO: we may want to inline this function
+      await addResource(
+        input,
+        input.resourceContentPath,
+        input.resourceUri,
+        httpClient
+      );
+    }
+  } catch (err) {
+    throw err;
+  }
+  return "task finished";
 }
 
 /**
  * Add a resource to keptn
- * 
+ *
  * @param input Parameters
  * @param localPath to the config file
  * @param remoteUri remote Target path
  * @param httpClient an instance of axios
  */
-async function addResource(input:Params, localPath:string, remoteUri:string, httpClient:AxiosInstance, keptnVersion:string){
-	console.log('adding resource ' + localPath + ' to keptn target ' + remoteUri);
-	let resourceContent = fs.readFileSync(localPath); // do not use an encoding here to get binary files
-	let endpointUri = '/configuration-service/v1/project/';
-	if (keptnVersion == '0.6'){
-		endpointUri = '/v1/project/';
-	}
-	let options = {
-		method: <Method>"POST",
-		url: input.keptnApiEndpoint + endpointUri + input.project + '/stage/' + input.stage + '/service/' + input.service + '/resource',
-		headers: {'x-token': input.keptnApiToken},
-		data: {
-			resources: [
-				{
-					resourceURI: remoteUri,
-					resourceContent: Buffer.from(resourceContent).toString('base64')
-				}
-			]
-		}
-	};
-	try{
-		let response = await httpClient(options);
-	}catch(err){
-		throw err;
-	}
+async function addResource(
+  input: Params,
+  localPath: string,
+  remoteUri: string,
+  httpClient: AxiosInstance
+) {
+  console.log("adding resource " + localPath + " to keptn target " + remoteUri);
+  let resourceContent = fs.readFileSync(localPath); // do not use an encoding here to get binary files
+  let endpointUri = "/configuration-service/v1/project/";
+  let options = {
+    method: <Method>"POST",
+    url:
+      input.keptnApiEndpoint +
+      endpointUri +
+      input.project +
+      "/stage/" +
+      input.stage +
+      "/service/" +
+      input.service +
+      "/resource",
+    headers: { "x-token": input.keptnApiToken },
+    data: {
+      resources: [
+        {
+          resourceURI: remoteUri,
+          resourceContent: Buffer.from(resourceContent).toString("base64"),
+        },
+      ],
+    },
+  };
+  try {
+    let response = await httpClient(options);
+  } catch (err) {
+    throw err;
+  }
 }
 
 /**

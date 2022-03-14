@@ -20,8 +20,7 @@ tmr.setInput('start', moment().subtract(1, 'days').format('YYYY-MM-DDTHH:MM:ss')
 tmr.setInput('timeframe', '15m');
 tmr.setInput('teststrategy', 'performance');
 tmr.registerMockExport("getVariable", function(v:string){
-    if (v=="Build.DefinitionName") return "TestDefinition";
-    if (v=="keptnVersion") return "0.8.1";
+    if (v == "Build.DefinitionName") return "TestDefinition";
     return "i don't know";
 });
 
