@@ -20,17 +20,6 @@ class GenericParams {
 	body: string | undefined;
 }
 
-class DeploymentFinishedParams {
-	deploymentURI: string = '';
-	testStrategy: string = '';
-	tag: string = '';
-	image: string = '';
-}
-
-class ConfigurationChangedParams {
-	image: string = '';
-}
-
 class Params {
 	eventType: string = '';
 	project: string = '';
@@ -42,8 +31,6 @@ class Params {
 	evaluationParams: EvalParams | undefined;
 	deliveryParams: DeliveryParams | undefined;
 	genericParams: GenericParams | undefined;
-	deployFinishedParams: DeploymentFinishedParams | undefined;
-	configChangedParams: ConfigurationChangedParams | undefined;
 }
 
 /**
@@ -165,50 +152,8 @@ function prepare(): Params | undefined {
 
       p.genericParams = gc;
       console.log("using body", body);
-    } else if (p.eventType == "deploymentFinished") {
-      let pd = new DeploymentFinishedParams();
-      const deploymentURI: string | undefined = tl.getInput("deploymentURI");
-      if (deploymentURI != undefined) {
-        pd.deploymentURI = deploymentURI;
-      } else {
-        badInput.push("deploymentURI");
-      }
-      const testStrategy: string | undefined = tl.getInput("testStrategy");
-      if (testStrategy != undefined) {
-        pd.testStrategy = testStrategy;
-      } else {
-        badInput.push("testStrategy");
-      }
-      const tag: string | undefined = tl.getInput("tag");
-      if (tag != undefined) {
-        pd.tag = tag;
-      } else {
-        badInput.push("tag");
-      }
-      const image: string | undefined = tl.getInput("image");
-      if (image != undefined) {
-        pd.image = image;
-      } else {
-        badInput.push("image");
-      }
-
-      p.deployFinishedParams = pd;
-      console.log("using deploymentURI", deploymentURI);
-      console.log("using testStrategy", testStrategy);
-      console.log("using tag", tag);
-      console.log("using image", image);
-    } else if (p.eventType == "configurationChanged") {
-      let pc = new ConfigurationChangedParams();
-      const image: string | undefined = tl.getInput("image");
-      if (image != undefined) {
-        pc.image = image;
-      } else {
-        badInput.push("image");
-      }
-
-      p.configChangedParams = pc;
-      console.log("using image", image);
     }
+
     if (badInput.length > 0) {
       tl.setResult(
         tl.TaskResult.Failed,
@@ -271,15 +216,6 @@ async function run(input: Params) {
       input.genericParams != undefined
     ) {
       let keptnContext = await triggerGeneric(input, axiosInstance);
-      return keptnContext;
-    } else if (input.eventType == "configurationChanged") {
-      let keptnContext = await configurationChanged(input, axiosInstance);
-      return keptnContext;
-    } else if (
-      input.eventType == "deploymentFinished" &&
-      input.deployFinishedParams != undefined
-    ) {
-      let keptnContext = await deploymentFinished(input, axiosInstance);
       return keptnContext;
     } else {
       throw new Error("Unsupported eventType");
@@ -431,100 +367,6 @@ async function triggerGeneric(input: Params, httpClient: AxiosInstance) {
   }
 
   console.log("sending generic event ...");
-  let response = await httpClient(options);
-  return storeKeptnContext(input, response);
-}
-
-/**
- * Send the deployment-finished event based on the input parameters
- *
- * Example: sendDeploymentFinishedEvent deploymentURI:"http://mysampleapp.mydomain.local" testStrategy:"performance"
- * Will trigger a Continuous Performance Evaluation workflow in Keptn where Keptn will
- *   -> first: trigger a test execution against that URI with the specified testStrategy
- *   -> second: trigger an SLI/SLO evaluation!
- *
- * @param input Parameters
- * @param httpClient an instance of axios
- * @deprecated
- */
-async function deploymentFinished(input: Params, httpClient: AxiosInstance) {
-  let options = {
-    method: <Method>"POST",
-    url: input.keptnApiEndpoint + "/v1/event",
-    headers: { "x-token": input.keptnApiToken },
-    data: {
-      type: "sh.keptn.events.deployment-finished",
-      source: "azure-devops-plugin",
-      specversion: "0.2",
-      data: {
-        project: input.project,
-        service: input.service,
-        stage: input.stage,
-        teststrategy:
-          input.deployFinishedParams != undefined
-            ? input.deployFinishedParams.testStrategy
-            : "performance",
-        deploymentURIPublic:
-          input.deployFinishedParams != undefined
-            ? input.deployFinishedParams.deploymentURI
-            : "null",
-        tag:
-          input.deployFinishedParams != undefined
-            ? input.deployFinishedParams.tag
-            : "null",
-        image:
-          input.deployFinishedParams != undefined
-            ? input.deployFinishedParams.image
-            : "null",
-        labels: parseLabels(),
-      },
-    },
-  };
-
-  console.log("sending deploymentFinished event ...");
-  let response = await httpClient(options);
-  return storeKeptnContext(input, response);
-}
-
-/**
- * Send the configuration.change event based on the input parameters
- *
- * Example: sendConfigurationChangedEvent image:"docker.io/heydenb/simplenodeservice:3.0.0"
- * Will trigger a full delivery workflow in keptn!
- *
- * @param input Parameters
- * @param httpClient an instance of axios
- * @deprecated
- */
-async function configurationChanged(input: Params, httpClient: AxiosInstance) {
-  let options = {
-    method: <Method>"POST",
-    url: input.keptnApiEndpoint + "/v1/event",
-    headers: { "x-token": input.keptnApiToken },
-    data: {
-      type: "sh.keptn.event.configuration.change",
-      source: "azure-devops-plugin",
-      specversion: "0.2",
-      data: {
-        project: input.project,
-        service: input.service,
-        stage: input.stage,
-        canary: {
-          action: "set",
-          value: 100,
-        },
-        valuesCanary: {
-          image:
-            input.configChangedParams != undefined
-              ? input.configChangedParams.image
-              : "null",
-        },
-        labels: parseLabels(),
-      },
-    },
-  };
-
-  console.log("sending configuration-changed event ...");
   let response = await httpClient(options);
   return storeKeptnContext(input, response);
 }
