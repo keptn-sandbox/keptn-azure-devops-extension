@@ -20,8 +20,7 @@ let keptnFile = fs.readFileSync(require('os').homedir() + '/.keptn/.keptn','utf8
 tmr.registerMockExport("getEndpointUrl", function(){return keptnFile.split('\n')[0]});
 tmr.registerMockExport("getEndpointAuthorizationParameter", function(){return keptnFile.split('\n')[1]});
 tmr.registerMockExport("getVariable", function(v:string){
-    if (v=="keptnContext") return "398a73d8-490f-46ca-8825-4f7684475f2b";
-    if (v=="keptnVersion") return "0.8.4";
+    if (v == "keptnContext") return "398a73d8-490f-46ca-8825-4f7684475f2b";
     return "i don't know";
 });
 

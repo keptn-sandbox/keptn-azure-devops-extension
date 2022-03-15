@@ -118,148 +118,76 @@ function prepare():Params | undefined {
  * 
  * @param input Parameters
  */
-async function run(input:Params){
-	try{
-		const axiosInstance = axios.create({
-			httpsAgent: new https.Agent({  
-				rejectUnauthorized: false
-			})
-		});
-		if (input.waitForEventType == 'evaluationDone'){
-			let keptnVersion = tl.getVariable('keptnVersion');
-			if (keptnVersion==null){
-				keptnVersion = '0.8.1'; //smart default
-			}
-			if (keptnVersion.startsWith('0.8')){
-				return waitForEvaluationDone(input, axiosInstance);
-			} 
-			else{
-				return waitForEvaluationDonePre08(input, axiosInstance);
-			}
-		}
-		else{
-			throw new Error('Unsupported eventType');
-		}
-	}catch(err){
-		throw err;
-	}
-	return "task finished";
+async function run(input: Params) {
+  try {
+    const axiosInstance = axios.create({
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false,
+      }),
+    });
+    if (input.waitForEventType == "evaluationDone") {
+      return waitForEvaluationDone(input, axiosInstance);
+    } else {
+      throw new Error("Unsupported eventType");
+    }
+  } catch (err) {
+    throw err;
+  }
 }
 
 /**
  * Request the evaluation-done event based on the startEvaluationKeptnContext task variable.
  * Try a couple of times since it can take a few seconds for keptn to evaluate.
- * 
+ *
  * @param input Parameters
  * @param httpClient an instance of axios
  */
-async function waitForEvaluationDone(input:Params, httpClient:AxiosInstance){
-	let keptnContext = tl.getVariable(input.keptnContextVar);
-	console.log('using keptnContext = ' + keptnContext);
-	let evaluationScore = -1;
-	let evaluationResult = "empty";
+async function waitForEvaluationDone(input: Params, httpClient: AxiosInstance) {
+  let keptnContext = tl.getVariable(input.keptnContextVar);
+  console.log("using keptnContext = " + keptnContext);
+  let evaluationScore = -1;
+  let evaluationResult = "empty";
 
-	let options:any = {
-		method: <Method>"GET",
-		headers: {'x-token': input.keptnApiToken},
-		url: input.keptnApiEndpoint + '/mongodb-datastore/event?type=sh.keptn.event.evaluation.finished&keptnContext=' + keptnContext
-	}
-	
-	let c=0;
-	let max = (input.timeout * 60) / 10
-	let out;
-	console.log("waiting in steps of 10 seconds, max " + max + " loops.");
-	do{
-		await delay(10000); //wait 10 seconds
-		var response = await httpClient(options);
-		if (response.data.events != undefined && response.data.totalCount == 1){
-			out = response.data.events[0];
-			evaluationScore = out.data.evaluation.score;
-			evaluationResult = out.data.evaluation.result;
-		}
-		else {
-			if (++c > max){
-				evaluationResult = "not-found"
-			}
-			else {
-				console.log("wait another 10 seconds");
-			}
-		}
-	}while (evaluationResult == "empty");
+  let options: any = {
+    method: <Method>"GET",
+    headers: { "x-token": input.keptnApiToken },
+    url:
+      input.keptnApiEndpoint +
+      "/mongodb-datastore/event?type=sh.keptn.event.evaluation.finished&keptnContext=" +
+      keptnContext,
+  };
 
-	handleEvaluationResult(evaluationResult, evaluationScore, keptnContext, input);
+  let c = 0;
+  let max = (input.timeout * 60) / 10;
+  let out;
+  console.log("waiting in steps of 10 seconds, max " + max + " loops.");
+  do {
+    await delay(10000); //wait 10 seconds
+    var response = await httpClient(options);
+    if (response.data.events != undefined && response.data.totalCount == 1) {
+      out = response.data.events[0];
+      evaluationScore = out.data.evaluation.score;
+      evaluationResult = out.data.evaluation.result;
+    } else {
+      if (++c > max) {
+        evaluationResult = "not-found";
+      } else {
+        console.log("wait another 10 seconds");
+      }
+    }
+  } while (evaluationResult == "empty");
 
-	console.log("************* Result from Keptn ****************");
-	console.log(JSON.stringify(out, null, 2));
+  handleEvaluationResult(
+    evaluationResult,
+    evaluationScore,
+    keptnContext,
+    input
+  );
 
-	return evaluationResult;
-}
+  console.log("************* Result from Keptn ****************");
+  console.log(JSON.stringify(out, null, 2));
 
-/**
- * Request the evaluation-done event based on the startEvaluationKeptnContext task variable.
- * Try a couple of times since it can take a few seconds for keptn to evaluate.
- * 
- * @param input Parameters
- * @param httpClient an instance of axios
- */
-async function waitForEvaluationDonePre08(input:Params, httpClient:AxiosInstance){
-	let keptnContext = tl.getVariable(input.keptnContextVar);
-	console.log('using keptnContext = ' + keptnContext);
-	let evaluationScore = -1;
-	let evaluationResult = "empty";
-	let evaluationDetails:any;
-
-	let options:any = {
-		method: <Method>"GET",
-		headers: {'x-token': input.keptnApiToken},
-		url: input.keptnApiEndpoint + '/v1/event?type=sh.keptn.events.evaluation-done&keptnContext=' + keptnContext
-	};
-
-	let c=0;
-	let max = (input.timeout * 60) / 10
-	let out;
-	console.log("waiting in steps of 10 seconds, max " + max + " loops.");
-	do{
-		try{
-			await delay(10000); //wait 10 seconds
-			var response = await httpClient(options);
-			evaluationScore = response.data.data.evaluationdetails.score;
-			evaluationResult = response.data.data.evaluationdetails.result;
-			evaluationDetails = response.data.data.evaluationdetails;
-			out = response.data.data;
-		}catch(err){
-			if (err != undefined 
-				&& err.response != undefined 
-				&& err.response.data != undefined
-				&& err.response.data.code != undefined
-				&& err.response.data.message != undefined
-				&& (
-					err.response.data.code == '500' || 
-					err.response.data.code == '404') //From Keptn 0.7 onwards a 404 is thrown in stead of 500
-				&& (
-					err.response.data.message.startsWith('No Keptn sh.keptn.events.evaluation-done event found for context') || 
-					err.response.data.message.startsWith('No sh.keptn.events.evaluation-done event found for Keptn context')
-				   )
-				){
-				if (++c > max){
-					evaluationResult = "not-found"
-				}
-				else {
-					console.log("wait another 10 seconds");
-				}
-			}
-			else{
-				throw err;
-			}
-		}
-	}while (evaluationResult == "empty");
-
-	handleEvaluationResult(evaluationResult, evaluationScore, keptnContext, input);
-
-	console.log("************* Result from Keptn ****************");
-	console.log(JSON.stringify(out, null, 2));
-
-	return evaluationResult;
+  return evaluationResult;
 }
 
 function handleEvaluationResult(evaluationResult:string, evaluationScore:number, keptnContext:string|undefined, input:Params){
