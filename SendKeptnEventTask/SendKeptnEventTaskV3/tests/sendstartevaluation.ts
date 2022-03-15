@@ -21,7 +21,7 @@ tmr.setInput('timeframe', '15m');
 tmr.setInput('teststrategy', 'performance');
 tmr.registerMockExport("getVariable", function(v:string){
     if (v == "Build.DefinitionName") return "TestDefinition";
-    return "i don't know";
+    throw new Error(`Unknown variable <${v}>`)
 });
 
 tmr.run();
