@@ -50,7 +50,7 @@ npm run test-addr
 
 In the main directory, run
 ```
-npm run package-dev
+AZDO_EXT_VERSION=<your version> npm run package-dev
 ```
 **Note**: See [manifest.js](manifest.js) section for configuration
 
@@ -60,7 +60,7 @@ npm run package-dev
 
 In the main directory, run
 ```
-npm run package
+AZDO_EXT_VERSION=<your version> npm run package
 ```
 **Note**: See [manifest.js](manifest.js) section for configuration
 
@@ -74,9 +74,9 @@ the extension ( private and public respectively) in a single command provided th
 a personal access token is passed in env variable `AZDO_PUBTOKEN`, so:
 - To publish a private version of the extension
 ```
-AZDO_PUBTOKEN=<your token goes here> npm run publish-dev
+AZDO_EXT_VERSION=<your version> AZDO_PUBTOKEN=<your token goes here> npm run publish-dev
 ```
 - To publish a public version fo the extension
 ```
-AZDO_PUBTOKEN=<your token goes here> npm run publish
+AZDO_EXT_VERSION=<your version> AZDO_PUBTOKEN=<your token goes here> npm run publish
 ```

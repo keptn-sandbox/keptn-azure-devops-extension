@@ -42,7 +42,12 @@ function addPathToFileContributions(
 module.exports = (env) => {
   let [idPostfix, namePostfix, isPublic] =
     env.mode == "development" ? ["-dev", " [DEV]", false] : ["", "", true];
-  let version = env.version != undefined ? env.version : "1.5.0";
+
+  if (!env.version) {
+    throw new Error("No version given, please set the enviornment variable AZDO_EXT_VERSION to your desired version!")
+  }
+
+  let version = env.version;
 
   let manifest = {
     manifestVersion: 1,
