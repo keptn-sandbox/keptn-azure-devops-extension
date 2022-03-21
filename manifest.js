@@ -44,7 +44,7 @@ module.exports = (env) => {
     env.mode == "development" ? ["-dev", " [DEV]", false] : ["", "", true];
 
   if (!env.version) {
-    throw new Error("No version given, please set the enviornment variable AZDO_EXT_VERSION to your desired version!")
+    throw new Error("No version found in environment, please check your environment definition!")
   }
 
   let version = env.version;
