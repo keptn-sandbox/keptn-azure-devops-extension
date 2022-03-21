@@ -128,6 +128,11 @@ async function run(input: Params) {
     });
 
     {
+       // Check project name, only lowercase names are allowed
+       if (input.project != input.project.toLocaleLowerCase()) {
+        throw Error("project must be lowercase!")
+      }
+      
       //scope verify and create project if needed
       if (!(await entityExists("project", input, httpClient))) {
         if (input.autoCreate) {
