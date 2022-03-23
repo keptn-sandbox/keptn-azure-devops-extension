@@ -1,5 +1,5 @@
 import tl = require('azure-pipelines-task-lib/task');
-import axios, { Method, AxiosInstance } from 'axios';
+import axios, { Method, AxiosInstance, AxiosError } from 'axios';
 import moment from 'moment-timezone';
 import https = require('https');
 
@@ -331,8 +331,10 @@ async function triggerDelivery(input: Params, httpClient: AxiosInstance) {
   }
 
   console.log("sending delivery triggered event ...");
-  let response = await httpClient(options);
-  return storeKeptnContext(input, response);
+
+  return httpClient(options)
+    .catch(handleApiError)
+    .then(response => storeKeptnContext(input, response))
 }
 
 /**
@@ -367,8 +369,10 @@ async function triggerGeneric(input: Params, httpClient: AxiosInstance) {
   }
 
   console.log("sending generic event ...");
-  let response = await httpClient(options);
-  return storeKeptnContext(input, response);
+
+  return httpClient(options)
+    .catch(handleApiError)
+    .then(response => storeKeptnContext(input, response))
 }
 
 function getAPIFor(apiType: string) {
@@ -428,6 +432,29 @@ function storeKeptnContext(input: Params, response: any) {
   } else {
     tl.setVariable("keptnContext", response.data.keptnContext);
     return "stored " + response.data.keptnContext + " in variable keptnContext";
+  }
+}
+
+function handleApiError(err: Error | AxiosError) {
+  // If the error is an AxiosError, we can try to extract the error message from the 
+  // response and display it in the pipeline or just use the Axios error message
+  if (axios.isAxiosError(err)) {
+
+    if (err.response) {
+      // Response is most likely a JSON encoded object
+      if (err.response.data instanceof Object) {
+        throw err.response.data.message;
+      }
+
+      // If it's a string it could also be some payload that axios didn't understand
+      if (err.response.data instanceof String) {
+        throw Error(`Recieved error from Keptn:\n${err.response.data}`)
+      }
+    }
+
+    throw err.message
+  } else {
+    throw err;
   }
 }
 
