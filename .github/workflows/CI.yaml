@@ -26,10 +26,25 @@ jobs:
     needs: prepare_ci_run
     runs-on: ubuntu-20.04
     steps:
+      - name: Install and start K3s
+        run: curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -
+
+      - name: Install Keptn
+        id: install_keptn
+        uses: keptn-sandbox/action-install-keptn@main
+        with:
+          KEPTN_VERSION: "0.13.1"
+          KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+      - name: Test connection to keptn
+        run: |
+          curl -X GET "${{ steps.install_keptn.outputs.KEPTN_ENDPOINT }}/v1/metadata" -H  "accept: application/json" -H  "x-token: ${{ steps.install_keptn.outputs.KEPTN_API_TOKEN }}"
+
       - name: Check out repository
         uses: actions/checkout@v2
+
       - name: Unit tests
         uses: ./.github/actions/unit-tests
         with:
-          KEPTN_API_ENDPOINT: http://somekeptninstall.mock/api
-          KEPTN_API_TOKEN: somefancysupersecrettoken
+          KEPTN_API_ENDPOINT: ${{ steps.install_keptn.outputs.KEPTN_ENDPOINT }}
+          KEPTN_API_TOKEN: ${{ steps.install_keptn.outputs.KEPTN_API_TOKEN }}
