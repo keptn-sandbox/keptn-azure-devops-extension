@@ -274,7 +274,7 @@ function handleApiError(err: Error | AxiosError): AxiosPromise {
       if (err.response.data instanceof String || typeof err.response.data === "string") {
         throw Error(`Received error from Keptn:\n${err.response.data}`);
       } else if (err.request) {
-        throw Error("Did not receive a response from Keptn!")
+        throw Error(`Did not receive a response from Keptn: ${err.message}`)
       }
     }
 

@@ -148,7 +148,7 @@ async function run(input: Params) {
             },
           };
           console.log("create project " + input.project);
-          let response = await httpClient(options);
+          let response = await httpClient(options).catch(handleApiError);
         }
       } else {
         console.log("project " + input.project + " already exists.");
@@ -433,7 +433,7 @@ function handleApiError(err: Error | AxiosError) {
         throw Error(`Received error from Keptn:\n${err.response.data}`)
       }
     } else if (err.request) {
-      throw Error("Did not receive a response from Keptn!")
+      throw Error(`Did not receive a response from Keptn: ${err.message}`)
     }
 
     throw Error(err.message)

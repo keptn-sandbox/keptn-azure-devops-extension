@@ -200,7 +200,7 @@ async function addResource(
           throw Error(`Received error from Keptn:\n${err.response.data}`)
         }
       } else if (err.request) {
-        throw Error("Did not receive a response from Keptn!")
+        throw Error(`Did not receive a response from Keptn: ${err.message}`)
       }
 
       throw Error(err.message)

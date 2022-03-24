@@ -218,7 +218,7 @@ async function run(input: Params) {
       let keptnContext = await triggerGeneric(input, axiosInstance);
       return keptnContext;
     } else {
-      throw new Error("Unsupported eventType");
+      throw new Error(`Unsupported eventType '${input.eventType}'`);
     }
   } catch (err) {
     throw err;
@@ -451,7 +451,7 @@ function handleApiError(err: Error | AxiosError) {
         throw Error(`Received error from Keptn:\n${err.response.data}`)
       }
     } else if (err.request) {
-      throw Error("Did not receive a response from Keptn!")
+      throw Error(`Did not receive a response from Keptn: ${err.message}`)
     }
 
     throw Error(err.message)
