@@ -109,8 +109,9 @@ function prepare():Params | undefined {
 
 		return p;
 	} catch (err) {
-        tl.setResult(tl.TaskResult.Failed, err.message);
-    }
+		failTaskWithError(err);
+		return undefined;
+	}
 }
 
 /**
@@ -224,14 +225,36 @@ function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Fails the current task with an error message and creates
+// a stack trace in the output log if printStack is set to true
+function failTaskWithError(error: Error | string | unknown, printStack: boolean = true) {
+  let errorMessage: string;
+
+  if (typeof error === "string") {
+    errorMessage = error;
+  } else if (error instanceof Error) {
+    errorMessage = error.message;
+
+    // Print a stack trace to the output log
+    if (printStack) {
+      console.error(error.stack);
+    }
+  } else {
+    errorMessage = `${error}`;
+  }
+
+  tl.setResult(tl.TaskResult.Failed, errorMessage);
+}
+
 /**
  * Main
  */
 let input:Params | undefined = prepare();
 if (input !== undefined){
-	run(input).then(result => {
-    	console.log(result);
-	}).catch(err => {
-		console.error(err);
-	});
+  run(input).then(result => {
+    console.log(result);
+  }).catch(err => {
+    console.error(`Catching uncaught error and aborting task!`);
+    failTaskWithError(err)
+  });
 }

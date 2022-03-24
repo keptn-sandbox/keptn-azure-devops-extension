@@ -121,11 +121,8 @@ function prepare():Params | undefined {
 
 		return p;
 	} catch (err) {
-    if (err instanceof Error) {
-      tl.setResult(tl.TaskResult.Failed, err.message);
-		} else {
-			tl.setResult(tl.TaskResult.Failed, `Encountered unkown error: ${err}`);
-		}
+    failTaskWithError(err);
+    return undefined
   }
 }
 
@@ -263,36 +260,60 @@ function delay(ms: number) {
 }
 
 function handleApiError(err: Error | AxiosError): AxiosPromise {
-	// If the error is an AxiosError, we can try to extract the error message from the 
-	// response and display it in the pipeline or just use the Axios error message
-	if (axios.isAxiosError(err)) {
+  // If the error is an AxiosError, we can try to extract the error message from the 
+  // response and display it in the pipeline or just use the Axios error message
+  if (axios.isAxiosError(err)) {
 
-	  if (err.response) {
+    if (err.response) {
       // Response is most likely a JSON encoded object
       if (err.response.data instanceof Object) {
-        throw err.response.data.message;
+        throw Error(err.response.data.message);
       }
 
       // If it's a string it could also be some payload that axios didn't understand
-      if (err.response.data instanceof String) {
-        throw Error(`Recieved error from Keptn:\n${err.response.data}`)
+      if (err.response.data instanceof String || typeof err.response.data === "string") {
+        throw Error(`Received error from Keptn:\n${err.response.data}`);
+      } else if (err.request) {
+        throw Error("Did not receive a response from Keptn!")
       }
     }
 
-    throw err.message
+    throw Error(err.message);
   } else {
     throw err;
   }
+}
+
+// Fails the current task with an error message and creates
+// a stack trace in the output log if printStack is set to true
+function failTaskWithError(error: Error | string | unknown, printStack: boolean = true) {
+  let errorMessage: string;
+
+  if (typeof error === "string") {
+    errorMessage = error;
+  } else if (error instanceof Error) {
+    errorMessage = error.message;
+
+    // Print a stack trace to the output log
+    if (printStack) {
+      console.error(error.stack);
+    }
+  } else {
+    errorMessage = `${error}`;
+  }
+
+  tl.setResult(tl.TaskResult.Failed, errorMessage);
 }
 
 /**
  * Main
  */
 let input:Params | undefined = prepare();
-if (input !== undefined){
-	run(input).then(result => {
-    	console.log(result);
-	}).catch(err => {
-		tl.setResult(tl.TaskResult.Failed, `${err}`);
-	});
+if (input !== undefined) {
+  run(input).then(result => {
+    console.log(result);
+  }).catch(err => {
+    console.error(`Catching uncaught error and aborting task!`);
+    failTaskWithError(err);
+  });
 }
