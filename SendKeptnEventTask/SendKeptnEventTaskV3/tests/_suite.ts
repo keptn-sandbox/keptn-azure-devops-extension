@@ -1,6 +1,9 @@
 import * as path from 'path';
 import * as assert from 'assert';
 import * as ttm from 'azure-pipelines-task-lib/mock-test';
+import fs from 'fs';
+
+let keptnFile = fs.readFileSync(require('os').homedir() + '/.keptn/.keptn','utf8');
 
 describe('Send Keptn Event task tests', function () {
 
@@ -20,12 +23,14 @@ describe('Send Keptn Event task tests', function () {
 		console.log(tr.succeeded);
 		console.log(tr.stdout);
 		console.log(tr.stderr);
+
+		const endpointUri = keptnFile.split('\n')[0];
 		
 	    assert.strictEqual(tr.succeeded, true, 'should have succeeded');
 	    assert.strictEqual(tr.warningIssues.length, 0, "should have no warnings");
 	    assert.strictEqual(tr.errorIssues.length, 0, "should have no errors");
-		assert.strictEqual(tr.stdout.indexOf('keptnApiEndpoint https://api.keptn.mock') >= 0, true, "should display keptnApiEndpoint");
-		assert.strictEqual(tr.stdout.indexOf('sending') >= 0, false, "should not be sending");
+		assert.strictEqual(tr.stdout.indexOf(`keptnApiEndpoint ${endpointUri}`) >= 0, true, "should display keptnApiEndpoint");
+		assert.strictEqual(tr.stdout.indexOf('sending') >= 0, true, "should be sending");
 		
 	    done();
 	});

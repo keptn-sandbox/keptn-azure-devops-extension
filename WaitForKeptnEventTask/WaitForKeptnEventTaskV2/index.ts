@@ -1,5 +1,5 @@
 import tl = require('azure-pipelines-task-lib/task');
-import axios, { Method, AxiosInstance } from 'axios';
+import axios, { Method, AxiosInstance, AxiosError, AxiosPromise } from 'axios';
 import https = require('https');
 
 class Params {
@@ -121,8 +121,9 @@ function prepare():Params | undefined {
 
 		return p;
 	} catch (err) {
-        tl.setResult(tl.TaskResult.Failed, err.message);
-    }
+    failTaskWithError(err);
+    return undefined
+  }
 }
 
 /**
@@ -204,7 +205,7 @@ async function waitFor(
   console.log("waiting in steps of 10 seconds, max " + max + " loops.");
   do {
     await delay(10000); //wait 10 seconds
-    var response = await httpClient(options);
+    var response = await httpClient(options).catch(handleApiError);
     if (response.data.events != undefined && response.data.totalCount == 1) {
       result = callback(response.data.events[0], keptnContext, input);
       let keptnEventData = JSON.stringify(response.data.events[0], null, 2);
@@ -258,14 +259,61 @@ function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function handleApiError(err: Error | AxiosError): AxiosPromise {
+  // If the error is an AxiosError, we can try to extract the error message from the 
+  // response and display it in the pipeline or just use the Axios error message
+  if (axios.isAxiosError(err)) {
+
+    if (err.response) {
+      // Response is most likely a JSON encoded object
+      if (err.response.data instanceof Object) {
+        throw Error(err.response.data.message);
+      }
+
+      // If it's a string it could also be some payload that axios didn't understand
+      if (err.response.data instanceof String || typeof err.response.data === "string") {
+        throw Error(`Received error from Keptn:\n${err.response.data}`);
+      } else if (err.request) {
+        throw Error(`Did not receive a response from Keptn: ${err.message}`)
+      }
+    }
+
+    throw Error(err.message);
+  } else {
+    throw err;
+  }
+}
+
+// Fails the current task with an error message and creates
+// a stack trace in the output log if printStack is set to true
+function failTaskWithError(error: Error | string | unknown, printStack: boolean = true) {
+  let errorMessage: string;
+
+  if (typeof error === "string") {
+    errorMessage = error;
+  } else if (error instanceof Error) {
+    errorMessage = error.message;
+
+    // Print a stack trace to the output log
+    if (printStack) {
+      console.error(error.stack);
+    }
+  } else {
+    errorMessage = `${error}`;
+  }
+
+  tl.setResult(tl.TaskResult.Failed, errorMessage);
+}
+
 /**
  * Main
  */
 let input:Params | undefined = prepare();
-if (input !== undefined){
-	run(input).then(result => {
-    	console.log(result);
-	}).catch(err => {
-		tl.setResult(tl.TaskResult.Failed, `${err}`);
-	});
+if (input !== undefined) {
+  run(input).then(result => {
+    console.log(result);
+  }).catch(err => {
+    console.error(`Catching uncaught error and aborting task!`);
+    failTaskWithError(err);
+  });
 }
