@@ -42,6 +42,45 @@ npm run test-wait
 npm run test-addr
 ```
 
+# Modifying tasks
+In order to avoid issues with Azure devops caching, changes to tasks MUST be accompanied to changes to the task version
+following the guidelines in [Task versioning section of release process](RELEASE.md#task-versioning)
+
+## Bumping task versions manually
+
+### Option 1: modify task.json as part of the normal development process
+Simply change the minor/patch version in task.json when performing changes (beware of conflicts if someone else is working in parallel on the same task)
+
+### Option 2: use npm scripts
+We can bump the **patch** version of a task by running `npm run task:bump`, for example
+```
+npm run task:bump AddKeptnResourceTask/AddKeptnResourceTaskV1/task.json
+```
+
+We can bump the **minor** version of a task by running for example
+```
+npm run task:bump -- --type  minor AddKeptnResourceTask/AddKeptnResourceTaskV1/task.json
+```
+
+If we want to bump **all** tasks patch versions we have a shortcut (note that we use **tasks** as prefix here)
+```
+npm run tasks:bump
+```
+
+## Bumping task versions using a git precommit hook
+
+In this repo we also have a [bash script](git-hooks/pre-commit-hook.sh) that can be used as [git hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) normally for pre-commit.
+
+The script will check if there are changes staged for commit for a task without including a modified `task.json` and automatically bump the patch version
+and add task.json to the commit
+
+You can install the hook by copying it to the `hooks` directory with the appropriate name and making it executable
+```
+cp ./git-hooks/pre-commit-hook.sh ./.git/hooks/pre-commit && chmod +x ./.git/hooks/pre-commit
+```
+
+
+
 # Test the extension
 
 ## Create Private Dev VSIX Package
