@@ -5,6 +5,7 @@
   "description": "Initialize Keptn environment with project and stage",
   "author": "Dynatrace",
   "helpMarkDown": "Initialize Keptn environment with project and stage",
+  "deprecated": true,
   "category": "Test",
   "visibility": [
     "Build",
