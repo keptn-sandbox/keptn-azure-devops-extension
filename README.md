@@ -27,6 +27,9 @@ All you need to configure is the API endpoint and the token. Note that the api e
 > **Tip:** The API Token can be found in the Keptn bridge behind the user icon in the upper right corner.
 
 ## Prepare Keptn environment
+
+:warning: **This task is deprecated and will stop working once Keptn requires a git upstream repo when creating a project.**  It is recommended to use the Keptn CLI/API for project setup.
+
 This task is optional, but very usefull since it prepares a project, stage and service for you. It also puts these entities as variables on the pipeline for later use by the other tasks. Optionally you can also configure monitoring here and push an [sli and slo](https://keptn.sh/docs/concepts/quality_gates/) file to Keptn.
 ![Prepare Keptn environment config](screenshots/task-prepkeptnenv.png)
 
