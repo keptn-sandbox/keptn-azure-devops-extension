@@ -1,5 +1,7 @@
 # Azure DevOps Cloud Automation Integration powered by Keptn
 
+## :warning: This service is currently not maintained - please reach out to the Keptn community via https://slack.keptn.sh if you want to take ownership of this repository and update it to make it work with the latest version of Keptn :warning:
+
 Integration of Cloud Automation powered by [Keptn][keptn_link] within your Azure DevOps pipelines. 
 
 This extension includes 4 tasks which can be used to integrate your pipeline with Cloud Automation [Keptn][keptn_link] capabilities.
